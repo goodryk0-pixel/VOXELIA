@@ -1,88 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voxelia</title>
+<meta charset="UTF-8">
+<title>Voxelia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        body {
-            margin: 0;
-            min-height: 100vh; /* Zajistí barvu přes celou obrazovku */
-            font-family: Arial, sans-serif;
-            background: linear-gradient(180deg, #0f0f0f, #1a1a1a);
-            color: white;
-            text-align: center;
-        }
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle at top, #0f0f0f, #000);
+    color: white;
+    text-align: center;
+    overflow-x: hidden;
+}
 
-        h1 {
-            font-size: 60px;
-            margin-top: 80px;
-            letter-spacing: 5px;
-        }
+/* glowing background effect */
+body::before {
+    content: "";
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(0,255,150,0.1), transparent 70%);
+    animation: pulse 6s infinite;
+    z-index: -1;
+}
 
-        p {
-            color: #aaa;
-            font-size: 18px;
-        }
+@keyframes pulse {
+    0% {opacity: 0.4;}
+    50% {opacity: 1;}
+    100% {opacity: 0.4;}
+}
 
-        button {
-            margin-top: 30px;
-            padding: 15px 40px;
-            font-size: 18px;
-            border: none;
-            border-radius: 10px;
-            background: #4CAF50;
-            color: white;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+h1 {
+    font-size: 90px;
+    margin-top: 120px;
+    letter-spacing: 8px;
+    background: linear-gradient(45deg, #4CAF50, #66ffcc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
-        button:hover {
-            background: #66ff88;
-            transform: scale(1.1);
-        }
+p {
+    color: #aaa;
+    font-size: 22px;
+}
 
-        .section {
-            margin-top: 100px;
-        }
+/* button */
+button {
+    margin-top: 50px;
+    padding: 18px 60px;
+    font-size: 22px;
+    border: none;
+    border-radius: 15px;
+    background: linear-gradient(45deg, #4CAF50, #00ffaa);
+    color: black;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 20px rgba(0,255,150,0.5);
+}
 
-        .card {
-            background: #222;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 15px;
-            display: inline-block;
-            width: 250px;
-            vertical-align: top;
-        }
-    </style>
+button:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 40px rgba(0,255,150,1);
+}
+
+/* sections */
+.section {
+    margin-top: 150px;
+}
+
+/* cards */
+.card {
+    background: #111;
+    padding: 30px;
+    margin: 20px;
+    border-radius: 20px;
+    display: inline-block;
+    width: 260px;
+    transition: 0.4s;
+    box-shadow: 0 0 10px rgba(0,255,150,0.2);
+}
+
+.card:hover {
+    transform: translateY(-15px) scale(1.05);
+    box-shadow: 0 0 25px rgba(0,255,150,0.8);
+}
+
+/* footer */
+.footer {
+    margin-top: 150px;
+    padding: 20px;
+    color: #666;
+}
+</style>
 </head>
 
 <body>
 
-    <h1>VOXELIA</h1>
-    <p>Voxel world without limits</p>
+<h1>VOXELIA</h1>
+<p>Build. Explore. Survive.</p>
 
-    <button onclick="alert('The game is still in development! 😄')">
-        Download
-    </button>
+<button onclick="alert('Game coming soon 😄')">
+    DOWNLOAD
+</button>
 
-    <div class="section">
-        <h2>About the Game</h2>
+<div class="section">
+    <h2>Features</h2>
 
-        <div class="card">
-            🧱 Block-based World
-        </div>
+    <div class="card">🧱 Build Anything</div>
+    <div class="card">🌍 Infinite Worlds</div>
+    <div class="card">⚒️ Mine Resources</div>
+    <div class="card">🔥 Survival Mode</div>
+</div>
 
-        <div class="card">
-            🌍 Infinite Generation
-        </div>
+<div class="section">
+    <h2>About Voxelia</h2>
+    <p>
+        Voxelia is a voxel-based sandbox game where you can create, explore,
+        and survive in a limitless world made of blocks.
+    </p>
+</div>
 
-        <div class="card">
-            ⚒️ Crafting System
-        </div>
-    </div>
+<div class="footer">
+    © 2026 Voxelia
+</div>
 
 </body>
 </html>
