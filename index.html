@@ -5,95 +5,213 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VOXELIA | Official Site</title>
 <style>
-    :root { --primary: #3cff8f; --secondary: #8a2be2; --bg: #050510; --panel: rgba(31, 31, 46, 0.8); }
-    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; text-align: center; overflow-x: hidden; cursor: crosshair; transition: 0.5s; }
+    :root { 
+        --primary: #3cff8f; 
+        --secondary: #8a2be2; 
+        --bg: #050510; 
+        --panel: rgba(10, 10, 26, 0.9); 
+    }
+    
+    body { 
+        margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; 
+        text-align: center; overflow-x: hidden; cursor: crosshair; transition: 0.8s;
+    }
+
+    body.void-mode { --primary: #ff2a2a; --secondary: #4b0082; background: #0d0005; }
+
     #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
+
+    .top-bar { display: flex; justify-content: space-between; padding: 20px; z-index: 100; position: relative; }
     
-    /* Glitch Mode (Void) */
-    body.void-mode { --primary: #ff3c3c; --secondary: #4b0082; background: #0a0005; }
-
-    .lang-menu { position: absolute; top: 20px; right: 20px; display: flex; gap: 8px; flex-wrap: wrap; z-index: 100; }
-    .lang-btn { padding: 5px 10px; font-size: 11px; background: rgba(255,255,255,0.05); border: 1px solid var(--primary); color: var(--primary); cursor: pointer; border-radius: 3px; }
-    .lang-btn:hover { background: var(--primary); color: black; }
-
-    h1 { font-size: clamp(50px, 10vw, 90px); margin-top: 60px; letter-spacing: 10px; color: var(--primary); cursor: pointer; transition: 0.3s; }
-    h1:hover { animation: glitch 0.3s infinite; text-shadow: 2px 2px #ff00c1, -2px -2px #00fff9; }
-
-    .btn-download { background: var(--primary) !important; color: black !important; font-weight: 900; padding: 15px 45px; font-size: 22px; box-shadow: 0 0 20px var(--primary); border: none; cursor: pointer; border-radius: 5px; margin: 25px 0; text-transform: uppercase; }
-    .nav-btn { padding: 12px 25px; margin: 8px; background: transparent; border: 2px solid var(--primary); color: var(--primary); cursor: pointer; text-transform: uppercase; font-weight: bold; }
-    .nav-btn:hover { background: var(--primary); color: black; }
-
-    #content { min-height: 160px; background: var(--panel); max-width: 700px; margin: 20px auto; padding: 30px; border-radius: 12px; backdrop-filter: blur(8px); border-left: 4px solid var(--primary); text-align: left; }
+    .status-group { text-align: left; font-family: monospace; font-size: 12px; color: var(--primary); line-height: 1.5; }
+    .dot { height: 8px; width: 8px; background-color: var(--primary); border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 1s infinite; }
     
-    .secret { margin-top: 60px; padding-bottom: 80px; }
-    input { padding: 12px; background: #000; color: var(--primary); border: 1px solid #444; width: 250px; outline: none; }
-    #secretText { margin-top: 20px; font-weight: bold; color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+    @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-    @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-3px, 3px); } 40% { transform: translate(-3px, -3px); } 60% { transform: translate(3px, 3px); } 80% { transform: translate(3px, -3px); } 100% { transform: translate(0); } }
+    .lang-menu { display: flex; gap: 5px; flex-wrap: wrap; max-width: 300px; justify-content: flex-end; }
+    .lang-btn { 
+        padding: 4px 8px; font-size: 10px; background: rgba(255,255,255,0.05); 
+        border: 1px solid var(--primary); color: var(--primary); cursor: pointer; border-radius: 3px;
+    }
+    .lang-btn:hover { background: var(--primary); color: #000; }
+
+    h1 { font-size: clamp(50px, 10vw, 100px); margin: 30px 0 5px 0; letter-spacing: 15px; color: var(--primary); cursor: pointer; text-shadow: 0 0 15px var(--primary); }
+    h1:hover { animation: glitch 0.3s infinite; }
+
+    .btn-main {
+        background: var(--primary); color: black; font-weight: 900; padding: 15px 40px; 
+        font-size: 18px; border: none; cursor: pointer; border-radius: 5px; margin: 10px; 
+        text-transform: uppercase; box-shadow: 0 0 20px var(--primary); transition: 0.3s;
+    }
+    .btn-main:hover { transform: scale(1.05); box-shadow: 0 0 40px var(--primary); }
+
+    #content { 
+        min-height: 200px; background: var(--panel); max-width: 800px; margin: 20px auto; 
+        padding: 30px; border-radius: 5px; border-left: 5px solid var(--primary); text-align: left;
+        backdrop-filter: blur(10px); box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    }
+
+    /* Auth System Styles */
+    .auth-container {
+        background: var(--panel);
+        border: 1px solid var(--primary);
+        padding: 20px;
+        max-width: 300px;
+        margin: 20px auto;
+        border-radius: 5px;
+    }
+    .auth-container input {
+        width: 90%; padding: 10px; margin: 10px 0; background: #000; border: 1px solid var(--primary); color: white;
+    }
+    #user-profile {
+        background: rgba(60, 255, 143, 0.1);
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px auto;
+        max-width: 400px;
+        display: none; /* Skryté dokud se nepřihlásí */
+    }
+
+    .gallery { display: flex; justify-content: center; gap: 15px; margin: 40px auto; max-width: 800px; flex-wrap: wrap; }
+    .screenshot { 
+        width: 180px; height: 100px; background: #111; border: 1px solid var(--primary); 
+        cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center;
+        font-size: 10px; color: var(--primary); text-transform: uppercase;
+    }
+    .screenshot:hover { transform: scale(1.1); box-shadow: 0 0 20px var(--primary); background: var(--primary); color: #000; }
+
+    @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-3px, 3px); } 100% { transform: translate(0); } }
 </style>
 </head>
 <body>
 
 <canvas id="bg-canvas"></canvas>
 
-<div class="lang-menu">
-    <button class="lang-btn" onclick="setLang('en')">EN</button>
-    <button class="lang-btn" onclick="setLang('cs')">CZ</button>
-    <button class="lang-btn" onclick="setLang('sk')">SK</button>
-    <button class="lang-btn" onclick="setLang('de')">DE</button>
-    <button class="lang-btn" onclick="setLang('pl')">PL</button>
-    <button class="lang-btn" onclick="setLang('es')">ES</button>
-    <button class="lang-btn" onclick="setLang('ja')">JP</button>
+<div class="top-bar">
+    <div class="status-group">
+        <div><span class="dot"></span> SERVER: <span id="srv-status">ONLINE</span></div>
+        <div>> INTEGRITY: <span id="integrity-val">100%</span></div>
+        <div id="clock">> TIME: --:--:--</div>
+    </div>
+    <div class="lang-menu">
+        <button class="lang-btn" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('cs')">CZ</button>
+        <button class="lang-btn" onclick="setLang('sk')">SK</button>
+    </div>
 </div>
 
 <div class="container">
     <h1 onclick="toggleVoid()">VOXELIA</h1>
+    
+    <div id="auth-box" class="auth-container">
+        <h4 id="auth-title">CORE ACCESS</h4>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button class="lang-btn" onclick="register()">Register</button>
+        <button class="lang-btn" onclick="login()" style="background: var(--primary); color: black;">Login</button>
+    </div>
+
+    <div id="user-profile">
+        <h3>WELCOME, <span id="display-name" style="color: var(--primary);">REBUILDER</span></h3>
+        <p style="font-size: 12px; font-family: monospace;">RANK: ALPHA SURVIVOR | XP: 0</p>
+        <button class="lang-btn" onclick="logout()">LOGOUT</button>
+    </div>
+
     <p id="subtitle">Rebuild the world. Destroy the corrupted Titans.</p>
 
-    <button id="btn-dl" class="btn-download" onclick="alert('Alpha coming soon!')">DOWNLOAD ALPHA</button>
+    <button id="btn-dl" class="btn-main" onclick="alert('Alpha version 0.1.28 initializing...')">DOWNLOAD ALPHA</button>
 
-    <div class="btn-group">
-        <button id="btn-lore" class="nav-btn" onclick="showLore()">Lore</button>
-        <button id="btn-boss" class="nav-btn" onclick="showBoss()">Bosses</button>
+    <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+        <button class="lang-btn" style="padding: 10px 20px;" onclick="showLore()">Lore</button>
+        <button class="lang-btn" style="padding: 10px 20px;" onclick="showBoss()">Bosses</button>
+        <button class="lang-btn" style="padding: 10px 20px;" onclick="showUpdates()">Updates</button>
     </div>
 
     <div id="content">Select a module...</div>
 
+    <div class="gallery">
+        <div class="screenshot">Overworld</div>
+        <div class="screenshot">The Void</div>
+        <div class="screenshot">Titan Nest</div>
+    </div>
+
     <div class="secret">
         <h3 id="secret-title">Decryption Terminal</h3>
-        <input id="codeInput" placeholder="Code...">
-        <button id="btn-decrypt" class="nav-btn" onclick="checkCode()">Decrypt</button>
+        <input id="codeInput" placeholder="Enter key..." style="background:black; border:1px solid var(--primary); color:var(--primary); padding:10px; width: 200px;">
+        <button class="lang-btn" onclick="checkCode()">Execute</button>
         <div id="secretText"></div>
     </div>
 </div>
 
 <script>
+// --- AUTH LOGIC ---
+function register() {
+    const user = document.getElementById('username').value;
+    const pass = document.getElementById('password').value;
+    if (user && pass) {
+        localStorage.setItem('voxUser', user);
+        localStorage.setItem('voxPass', pass);
+        alert('Account linked to Core! You can now login.');
+    } else {
+        alert('Fill all encryption fields!');
+    }
+}
+
+function login() {
+    const user = document.getElementById('username').value;
+    const pass = document.getElementById('password').value;
+    const storedUser = localStorage.getItem('voxUser');
+    const storedPass = localStorage.getItem('voxPass');
+
+    if (user === storedUser && pass === storedPass) {
+        document.getElementById('auth-box').style.display = 'none';
+        document.getElementById('user-profile').style.display = 'block';
+        document.getElementById('display-name').innerText = user.toUpperCase();
+        localStorage.setItem('voxLogged', 'true');
+    } else {
+        alert('ACCESS DENIED: Credentials mismatch.');
+    }
+}
+
+function logout() {
+    localStorage.removeItem('voxLogged');
+    location.reload();
+}
+
+// Check if already logged in
+window.onload = function() {
+    if (localStorage.getItem('voxLogged') === 'true') {
+        document.getElementById('auth-box').style.display = 'none';
+        document.getElementById('user-profile').style.display = 'block';
+        document.getElementById('display-name').innerText = localStorage.getItem('voxUser').toUpperCase();
+    }
+    updateTime();
+};
+
+// --- REST OF THE CODE ---
+function updateTime() {
+    const now = new Date();
+    document.getElementById('clock').innerText = `> TIME: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+}
+setInterval(updateTime, 1000);
+
 const translations = {
-    en: { sub: "Rebuild the world. Destroy the corrupted Titans.", dl: "DOWNLOAD ALPHA", lore: "Lore", boss: "Bosses", secT: "Decryption Terminal", decB: "Decrypt", wait: "Select a module...", loreCont: "<h2>> CORE DATA</h2><p>Voxelia is a living structure. A core glitch caused the corruption.</p>", bossCont: "<h2>> TARGETS</h2><p><b>Stone Titan:</b> Mountain crusher.</p>", secretKey: "secretvoxel", bonusLore: "BONUS: The Titans were once humans trying to upload their souls." },
-    cs: { sub: "Přestav svět. Znič zkažené Titány.", dl: "STÁHNOUT ALFU", lore: "Příběh", boss: "Bossy", secT: "Dešifrovací Terminál", decB: "Dešifrovat", wait: "Vyber modul...", loreCont: "<h2>> DATA JÁDRA</h2><p>Voxelie je živá struktura. Chyba v jádru způsobila zkázu.</p>", bossCont: "<h2>> CÍLE</h2><p><b>Stone Titan:</b> Drtič hor.</p>", secretKey: "tajnyvoxel", bonusLore: "BONUS: Titáni byli kdysi lidé pokoušející se nahrát svou duši do sítě." },
-    sk: { sub: "Prestav svet. Znič skazených Titánov.", dl: "STIAHNUŤ ALFU", lore: "Príbeh", boss: "Bossia", secT: "Dešifrovací Terminál", decB: "Dešifrovať", wait: "Vyber modul...", loreCont: "<h2>> DATA JADRA</h2><p>Voxelie je živá štruktúra. Chyba v jadre spôsobila skazu.</p>", bossCont: "<h2>> CIELE</h2><p><b>Stone Titan:</b> Drvič hôr.</p>", secretKey: "tajnyvoxel", bonusLore: "BONUS: Titáni boli kedysi ľudia pokúšajúci sa nahrať svoju dušu do siete." },
-    de: { sub: "Baue die Welt neu auf.", dl: "ALPHA DOWNLOAD", lore: "Geschichte", boss: "Bosse", secT: "Terminal", decB: "Entschlüsseln", wait: "Modul wählen...", loreCont: "<h2>> DATEN</h2><p>Voxelia ist eine Struktur.</p>", bossCont: "<h2>> ZIELE</h2><p><b>Stone Titan:</b> Bergzermalmer.</p>", secretKey: "geheimvoxel", bonusLore: "BONUS: Die Titanen waren einst Menschen." },
-    pl: { sub: "Odbuduj świat.", dl: "POBIERZ ALPHĘ", lore: "Lore", boss: "Bossowie", secT: "Terminal", decB: "Deszyfruj", wait: "Wybierz moduł...", loreCont: "<h2>> DANE</h2><p>Voxelia to struktura.</p>", bossCont: "<h2>> CELE</h2><p><b>Kamienny Tytan.</b></p>", secretKey: "sekretnyvoxel", bonusLore: "BONUS: Tytani byli kiedyś ludźmi." },
-    es: { sub: "Reconstruye el mundo.", dl: "DESCARGAR", lore: "Historia", boss: "Jefes", secT: "Terminal", decB: "Descifrar", wait: "Seleccionar...", loreCont: "<h2>> DATOS</h2><p>Voxelia es vida.</p>", bossCont: "<h2>> OBJETIVOS</h2><p><b>Titán de Piedra.</b></p>", secretKey: "voxelosecreto", bonusLore: "BONUS: Los Titanes fueron humanos." },
-    ja: { sub: "世界を再建せよ。", dl: "ダウンロード", lore: "伝承", boss: "ボス", secT: "解読端末", decB: "解読", wait: "選択...", loreCont: "<h2>> コアデータ</h2><p>ヴォクセリアは構造体です。</p>", bossCont: "<h2>> ターゲット</h2><p><b>ストーン・タイタン。</b></p>", secretKey: "himitsuvoxel", bonusLore: "ボーナス：タイタンはかつて人間だった。" }
+    en: { sub: "Rebuild the world. Destroy the corrupted Titans.", dl: "DOWNLOAD ALPHA", loreCont: "<h2>> CORE DATA</h2><p>Voxelia is a living structure.</p>", secretKey: "secretvoxel" },
+    cs: { sub: "Přestav svět. Znič zkažené Titány.", dl: "STÁHNOUT ALFU", loreCont: "<h2>> DATA JÁDRA</h2><p>Voxelie je živá struktura.</p>", secretKey: "tajnyvoxel" },
+    sk: { sub: "Prestav svet. Znič skazených Titánov.", dl: "STIAHNUŤ ALFU", loreCont: "<h2>> DATA JADRA</h2><p>Voxelie je živá štruktúra.</p>", secretKey: "tajnyvoxel" }
 };
 
 let currentLang = 'en';
 
 function setLang(lang) {
     currentLang = lang;
-    const t = translations[lang];
-    document.getElementById('subtitle').innerText = t.sub;
-    document.getElementById('btn-dl').innerText = t.dl;
-    document.getElementById('btn-lore').innerText = t.lore;
-    document.getElementById('btn-boss').innerText = t.boss;
-    document.getElementById('secret-title').innerText = t.secT;
-    document.getElementById('btn-decrypt').innerText = t.decB;
-    document.getElementById('content').innerText = t.wait;
+    document.getElementById('subtitle').innerText = translations[lang].sub;
+    document.getElementById('btn-dl').innerText = translations[lang].dl;
 }
 
 function showLore() { typeWriter(translations[currentLang].loreCont, "content"); }
-function showBoss() { typeWriter(translations[currentLang].bossCont, "content"); }
+function showBoss() { typeWriter("<h2>> TITANS</h2><p>Scanning peaks...</p>", "content"); }
+function showUpdates() { typeWriter("<h2>> LOG v0.1.28</h2><ul><li>Auth system added</li></ul>", "content"); }
 
 function typeWriter(text, elementId) {
     let i = 0; const el = document.getElementById(elementId); el.innerHTML = "";
@@ -101,43 +219,36 @@ function typeWriter(text, elementId) {
         if (i < text.length) {
             if (text.charAt(i) === '<') { let end = text.indexOf('>', i); el.innerHTML += text.substring(i, end + 1); i = end + 1; }
             else { el.innerHTML += text.charAt(i); i++; }
-            setTimeout(typing, 15);
+            setTimeout(typing, 10);
         }
     }
     typing();
 }
 
-// OPRAVENÁ FUNKCE KÓDŮ
-function checkCode() {
-    const input = document.getElementById("codeInput").value.toLowerCase().trim();
-    const st = document.getElementById("secretText");
-    let found = false;
-
-    for (let l in translations) {
-        if (input === translations[l].secretKey) {
-            st.style.color = "var(--primary)";
-            typeWriter("> ACCESS GRANTED: " + translations[currentLang].bonusLore, "secretText");
-            document.body.style.boxShadow = "inset 0 0 100px var(--secondary)";
-            found = true; break;
-        }
-    }
-    if (!found) { st.style.color = "red"; st.innerText = "> ERROR: INVALID KEY"; }
-}
-
 function toggleVoid() {
     document.body.classList.toggle('void-mode');
-    const h1 = document.querySelector('h1');
-    h1.innerText = document.body.classList.contains('void-mode') ? "V O I D" : "VOXELIA";
+    const isVoid = document.body.classList.contains('void-mode');
+    document.getElementById('srv-status').innerText = isVoid ? "CORRUPTED" : "ONLINE";
+    document.getElementById('integrity-val').innerText = isVoid ? "CRITICAL" : "100%";
+    document.querySelector('h1').innerText = isVoid ? "V O I D" : "VOXELIA";
 }
 
-// Particles
+function checkCode() {
+    const input = document.getElementById("codeInput").value.toLowerCase().trim();
+    if (input === translations[currentLang].secretKey) {
+        document.getElementById("secretText").innerText = "> ACCESS GRANTED";
+    } else {
+        document.getElementById("secretText").innerText = "> ACCESS DENIED";
+    }
+}
+
 const canvas = document.getElementById('bg-canvas'); const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth; canvas.height = window.innerHeight;
 const parts = [];
-for(let i=0; i<50; i++) parts.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, s:Math.random()*2, v:Math.random()*0.5});
+for(let i=0; i<60; i++) parts.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, v:Math.random()*0.5});
 function anim() {
-    ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = "#3cff8f22";
-    parts.forEach(p => { ctx.fillRect(p.x, p.y, p.s, p.s); p.y -= p.v; if(p.y<0) p.y=canvas.height; });
+    ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary') + "33";
+    parts.forEach(p => { ctx.fillRect(p.x, p.y, 2, 2); p.y -= p.v; if(p.y<0) p.y=canvas.height; });
     requestAnimationFrame(anim);
 }
 anim();
