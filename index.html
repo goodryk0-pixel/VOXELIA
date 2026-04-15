@@ -10,6 +10,7 @@
         --secondary: #8a2be2; 
         --bg: #050510; 
         --panel: rgba(10, 10, 26, 0.9); 
+        --owner: #ff2a2a;
     }
     
     body { 
@@ -18,69 +19,28 @@
     }
 
     body.void-mode { --primary: #ff2a2a; --secondary: #4b0082; background: #0d0005; }
-
     #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
 
     .top-bar { display: flex; justify-content: space-between; padding: 20px; z-index: 100; position: relative; }
-    
-    .status-group { text-align: left; font-family: monospace; font-size: 12px; color: var(--primary); line-height: 1.5; }
-    .dot { height: 8px; width: 8px; background-color: var(--primary); border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 1s infinite; }
-    
-    @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-
-    .lang-menu { display: flex; gap: 5px; flex-wrap: wrap; max-width: 300px; justify-content: flex-end; }
-    .lang-btn { 
-        padding: 4px 8px; font-size: 10px; background: rgba(255,255,255,0.05); 
-        border: 1px solid var(--primary); color: var(--primary); cursor: pointer; border-radius: 3px;
-    }
+    .status-group { text-align: left; font-family: monospace; font-size: 11px; color: var(--primary); }
+    .lang-menu { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; max-width: 400px; }
+    .lang-btn { padding: 4px 8px; font-size: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--primary); color: var(--primary); cursor: pointer; border-radius: 3px; }
     .lang-btn:hover { background: var(--primary); color: #000; }
 
-    h1 { font-size: clamp(50px, 10vw, 100px); margin: 30px 0 5px 0; letter-spacing: 15px; color: var(--primary); cursor: pointer; text-shadow: 0 0 15px var(--primary); }
-    h1:hover { animation: glitch 0.3s infinite; }
+    h1 { font-size: clamp(40px, 8vw, 90px); margin: 20px 0; letter-spacing: 12px; color: var(--primary); cursor: pointer; text-shadow: 0 0 15px var(--primary); }
+    
+    .auth-container { background: var(--panel); border: 1px solid var(--primary); padding: 20px; max-width: 320px; margin: 10px auto; border-radius: 5px; }
+    .auth-container input { width: 85%; padding: 10px; margin: 8px 0; background: #000; border: 1px solid var(--primary); color: white; }
+    
+    #user-profile { background: rgba(60, 255, 143, 0.1); padding: 20px; border-radius: 5px; margin: 20px auto; max-width: 500px; display: none; border: 1px solid var(--primary); }
+    .admin-badge { background: var(--owner); color: white; padding: 2px 10px; font-size: 10px; border-radius: 10px; display: none; margin-bottom: 10px; }
 
-    .btn-main {
-        background: var(--primary); color: black; font-weight: 900; padding: 15px 40px; 
-        font-size: 18px; border: none; cursor: pointer; border-radius: 5px; margin: 10px; 
-        text-transform: uppercase; box-shadow: 0 0 20px var(--primary); transition: 0.3s;
-    }
-    .btn-main:hover { transform: scale(1.05); box-shadow: 0 0 40px var(--primary); }
-
-    #content { 
-        min-height: 200px; background: var(--panel); max-width: 800px; margin: 20px auto; 
-        padding: 30px; border-radius: 5px; border-left: 5px solid var(--primary); text-align: left;
-        backdrop-filter: blur(10px); box-shadow: 0 0 30px rgba(0,0,0,0.5);
-    }
-
-    /* Auth System Styles */
-    .auth-container {
-        background: var(--panel);
-        border: 1px solid var(--primary);
-        padding: 20px;
-        max-width: 300px;
-        margin: 20px auto;
-        border-radius: 5px;
-    }
-    .auth-container input {
-        width: 90%; padding: 10px; margin: 10px 0; background: #000; border: 1px solid var(--primary); color: white;
-    }
-    #user-profile {
-        background: rgba(60, 255, 143, 0.1);
-        padding: 15px;
-        border-radius: 5px;
-        margin: 20px auto;
-        max-width: 400px;
-        display: none; /* Skryté dokud se nepřihlásí */
-    }
-
-    .gallery { display: flex; justify-content: center; gap: 15px; margin: 40px auto; max-width: 800px; flex-wrap: wrap; }
-    .screenshot { 
-        width: 180px; height: 100px; background: #111; border: 1px solid var(--primary); 
-        cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center;
-        font-size: 10px; color: var(--primary); text-transform: uppercase;
-    }
-    .screenshot:hover { transform: scale(1.1); box-shadow: 0 0 20px var(--primary); background: var(--primary); color: #000; }
-
-    @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-3px, 3px); } 100% { transform: translate(0); } }
+    .btn-main { background: var(--primary); color: black; font-weight: 900; padding: 15px 40px; border: none; cursor: pointer; border-radius: 5px; margin: 10px; text-transform: uppercase; box-shadow: 0 0 15px var(--primary); transition: 0.3s; }
+    #content { min-height: 180px; background: var(--panel); max-width: 800px; margin: 20px auto; padding: 30px; border-radius: 5px; border-left: 5px solid var(--primary); text-align: left; line-height: 1.6; }
+    
+    .gallery { display: flex; justify-content: center; gap: 10px; margin: 20px; flex-wrap: wrap; }
+    .screenshot { width: 140px; height: 70px; background: #111; border: 1px solid var(--primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; transition: 0.3s; }
+    .screenshot:hover { background: var(--primary); color: black; }
 </style>
 </head>
 <body>
@@ -89,158 +49,186 @@
 
 <div class="top-bar">
     <div class="status-group">
-        <div><span class="dot"></span> SERVER: <span id="srv-status">ONLINE</span></div>
-        <div>> INTEGRITY: <span id="integrity-val">100%</span></div>
-        <div id="clock">> TIME: --:--:--</div>
+        <div>SERVER: ONLINE</div>
+        <div>INTEGRITY: 100%</div>
+        <div id="clock">TIME: --:--:--</div>
     </div>
-    <div class="lang-menu">
-        <button class="lang-btn" onclick="setLang('en')">EN</button>
-        <button class="lang-btn" onclick="setLang('cs')">CZ</button>
-        <button class="lang-btn" onclick="setLang('sk')">SK</button>
-    </div>
+    <div class="lang-menu" id="lang-btns"></div>
 </div>
 
 <div class="container">
     <h1 onclick="toggleVoid()">VOXELIA</h1>
-    
+
     <div id="auth-box" class="auth-container">
-        <h4 id="auth-title">CORE ACCESS</h4>
+        <h4 id="auth-title">SYSTEM LOGIN</h4>
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
-        <button class="lang-btn" onclick="register()">Register</button>
-        <button class="lang-btn" onclick="login()" style="background: var(--primary); color: black;">Login</button>
+        <div style="display:flex; gap:5px; justify-content: center;">
+            <button class="lang-btn" onclick="register()">REGISTER</button>
+            <button class="lang-btn" onclick="login()" style="background:var(--primary); color:black;">LOGIN</button>
+        </div>
     </div>
 
     <div id="user-profile">
-        <h3>WELCOME, <span id="display-name" style="color: var(--primary);">REBUILDER</span></h3>
-        <p style="font-size: 12px; font-family: monospace;">RANK: ALPHA SURVIVOR | XP: 0</p>
+        <div id="admin-tag" class="admin-badge">SYSTEM OWNER / DEVELOPER</div>
+        <h3>REBUILDER: <span id="display-name">---</span></h3>
+        <p id="display-rank">RANK: --- | XP: 0</p>
         <button class="lang-btn" onclick="logout()">LOGOUT</button>
+        <button id="admin-btn" class="lang-btn" style="border-color:var(--owner); color:var(--owner); display:none;" onclick="alert('Admin Panel: All sectors under control.')">ADMIN PANEL</button>
     </div>
 
     <p id="subtitle">Rebuild the world. Destroy the corrupted Titans.</p>
+    <button id="btn-dl" class="btn-main" onclick="alert('Establishing secure connection...')">DOWNLOAD ALPHA</button>
 
-    <button id="btn-dl" class="btn-main" onclick="alert('Alpha version 0.1.28 initializing...')">DOWNLOAD ALPHA</button>
-
-    <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-        <button class="lang-btn" style="padding: 10px 20px;" onclick="showLore()">Lore</button>
-        <button class="lang-btn" style="padding: 10px 20px;" onclick="showBoss()">Bosses</button>
-        <button class="lang-btn" style="padding: 10px 20px;" onclick="showUpdates()">Updates</button>
+    <div style="margin: 20px;">
+        <button class="lang-btn" style="padding:10px 15px;" onclick="showLore()">LORE</button>
+        <button class="lang-btn" style="padding:10px 15px;" onclick="showBoss()">BOSSES</button>
+        <button class="lang-btn" style="padding:10px 15px;" onclick="showUpdates()">UPDATES</button>
     </div>
 
-    <div id="content">Select a module...</div>
+    <div id="content">Welcome, Rebuilder. Select a data module.</div>
 
     <div class="gallery">
-        <div class="screenshot">Overworld</div>
-        <div class="screenshot">The Void</div>
-        <div class="screenshot">Titan Nest</div>
+        <div class="screenshot">OVERWORLD</div>
+        <div class="screenshot">THE VOID</div>
+        <div class="screenshot">TITAN NEST</div>
     </div>
 
-    <div class="secret">
-        <h3 id="secret-title">Decryption Terminal</h3>
-        <input id="codeInput" placeholder="Enter key..." style="background:black; border:1px solid var(--primary); color:var(--primary); padding:10px; width: 200px;">
-        <button class="lang-btn" onclick="checkCode()">Execute</button>
-        <div id="secretText"></div>
+    <div class="secret" style="margin-top:40px; padding-bottom:50px;">
+        <h4 id="secret-title">DECRYPTION</h4>
+        <input id="codeInput" placeholder="Key..." style="background:black; border:1px solid var(--primary); color:var(--primary); width:150px; padding:5px;">
+        <button class="lang-btn" onclick="checkCode()">EXECUTE</button>
+        <div id="secretText" style="margin-top:10px; font-size:12px; height: 20px;"></div>
     </div>
 </div>
 
 <script>
-// --- AUTH LOGIC ---
-function register() {
-    const user = document.getElementById('username').value;
-    const pass = document.getElementById('password').value;
-    if (user && pass) {
-        localStorage.setItem('voxUser', user);
-        localStorage.setItem('voxPass', pass);
-        alert('Account linked to Core! You can now login.');
-    } else {
-        alert('Fill all encryption fields!');
+const OWNER_USER = "goodryk";
+const OWNER_PASS = "Jjsjjseco";
+
+// --- DETAILNÍ DATA V KÓDU (PRO SYSTÉM) ---
+const translations = {
+    cs: { sub: "Přestav svět. Znič zkažené Titány.", dl: "STÁHNOUT ALFU", key: "tajnyvoxel" },
+    en: { sub: "Rebuild the world. Destroy the corrupted Titans.", dl: "DOWNLOAD ALPHA", key: "secretvoxel" },
+    sk: { sub: "Prestav svet. Znič skazených Titánov.", dl: "STIAHNUŤ ALFU", key: "tajnyvoxel" },
+    de: { sub: "Baue die Welt neu auf.", dl: "HERUNTERLADEN", key: "geheimvoxel" },
+    pl: { sub: "Odbuduj świat.", dl: "POBIERZ ALPHĘ", key: "sekretnyvoxel" },
+    es: { sub: "Reconstruye el mundo.", dl: "DESCARGAR", key: "voxelosecreto" },
+    sv: { sub: "Återuppbygg världen.", dl: "LADDA NER", key: "hemligvoxel" },
+    ja: { sub: "世界を再建せよ。", dl: "ダウンロード", key: "himitsuvoxel" }
+};
+
+const gameData = {
+    cs: {
+        shortLore: "<h2>> LORE</h2><p>Voxelie byla digitální simulací. Velký Glitch ji roztříštil. Vy jste poslední Rebuildeři, kteří ji musí složit zpět.</p>",
+        shortBoss: "<h2>> BOSS LIST</h2><p><b>1. Stone Titan</b> (Sektor Peaks)<br><b>2. Void Serpent</b> (Sektor Core)<br><b>3. Corrupted Core</b> (Finální Error)</p>",
+        fullLore: "DETAILNÍ LORE PRO KÓD: Voxelie vznikla jako projekt duševního uploadu. V roce 0 došlo k nakažení jádra neznámým virem z Voidu. Realita se rozpadla na 1x1x1 bloky. Hráči sbírají fragmenty kódu k opravě reality.",
+        fullBoss: "DETAILNÍ BOSS DATA: Stone Titan (Goliath) používá gravitační šoky. Void Serpent je imunní vůči fyzickým útokům. Core využívá smazání paměti."
+    },
+    en: {
+        shortLore: "<h2>> LORE</h2><p>Digital simulation shattered by the Great Glitch. You are the Rebuilders. Fix the code. Save the world.</p>",
+        shortBoss: "<h2>> TITANS</h2><p><b>1. Stone Titan</b><br><b>2. Void Serpent</b><br><b>3. Corrupted Core</b></p>"
     }
+};
+
+// --- LOGIKA ---
+let currentLang = 'cs';
+
+function register() {
+    const user = document.getElementById('username').value.trim();
+    const pass = document.getElementById('password').value;
+    if (!user || !pass) return alert('Missing data!');
+    let users = JSON.parse(localStorage.getItem('voxelia_users') || "[]");
+    if (users.find(u => u.name.toLowerCase() === user.toLowerCase()) || user.toLowerCase() === OWNER_USER) return alert('Username taken!');
+    users.push({name: user, pass: pass, rank: "ALPHA SURVIVOR", xp: 0});
+    localStorage.setItem('voxelia_users', JSON.stringify(users));
+    alert('Registered successfully!');
 }
 
 function login() {
-    const user = document.getElementById('username').value;
-    const pass = document.getElementById('password').value;
-    const storedUser = localStorage.getItem('voxUser');
-    const storedPass = localStorage.getItem('voxPass');
-
-    if (user === storedUser && pass === storedPass) {
-        document.getElementById('auth-box').style.display = 'none';
-        document.getElementById('user-profile').style.display = 'block';
-        document.getElementById('display-name').innerText = user.toUpperCase();
-        localStorage.setItem('voxLogged', 'true');
-    } else {
-        alert('ACCESS DENIED: Credentials mismatch.');
-    }
+    const uInput = document.getElementById('username').value.trim();
+    const pInput = document.getElementById('password').value;
+    if (uInput === OWNER_USER && pInput === OWNER_PASS) return completeLogin(OWNER_USER, "OWNER", 999999);
+    let users = JSON.parse(localStorage.getItem('voxelia_users') || "[]");
+    const found = users.find(u => u.name === uInput && u.pass === pInput);
+    if (found) completeLogin(found.name, found.rank, found.xp);
+    else alert('Login failed!');
 }
 
-function logout() {
-    localStorage.removeItem('voxLogged');
+function completeLogin(name, rank, xp) {
+    localStorage.setItem('voxLogged', 'true');
+    localStorage.setItem('voxCurrentName', name);
+    localStorage.setItem('voxCurrentRank', rank);
+    localStorage.setItem('voxCurrentXP', xp);
     location.reload();
 }
 
-// Check if already logged in
-window.onload = function() {
-    if (localStorage.getItem('voxLogged') === 'true') {
-        document.getElementById('auth-box').style.display = 'none';
-        document.getElementById('user-profile').style.display = 'block';
-        document.getElementById('display-name').innerText = localStorage.getItem('voxUser').toUpperCase();
+function showProfile() {
+    const name = localStorage.getItem('voxCurrentName');
+    const rank = localStorage.getItem('voxCurrentRank');
+    const xp = localStorage.getItem('voxCurrentXP');
+    document.getElementById('auth-box').style.display = 'none';
+    document.getElementById('user-profile').style.display = 'block';
+    const nEl = document.getElementById('display-name');
+    nEl.innerText = name.toUpperCase();
+    document.getElementById('display-rank').innerText = `RANK: ${rank} | XP: ${xp}`;
+    if (rank === "OWNER") {
+        nEl.style.color = "var(--owner)";
+        nEl.style.textShadow = "0 0 10px var(--owner)";
+        document.getElementById('admin-tag').style.display = 'block';
+        document.getElementById('admin-btn').style.display = 'inline-block';
     }
-    updateTime();
-};
-
-// --- REST OF THE CODE ---
-function updateTime() {
-    const now = new Date();
-    document.getElementById('clock').innerText = `> TIME: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-}
-setInterval(updateTime, 1000);
-
-const translations = {
-    en: { sub: "Rebuild the world. Destroy the corrupted Titans.", dl: "DOWNLOAD ALPHA", loreCont: "<h2>> CORE DATA</h2><p>Voxelia is a living structure.</p>", secretKey: "secretvoxel" },
-    cs: { sub: "Přestav svět. Znič zkažené Titány.", dl: "STÁHNOUT ALFU", loreCont: "<h2>> DATA JÁDRA</h2><p>Voxelie je živá struktura.</p>", secretKey: "tajnyvoxel" },
-    sk: { sub: "Prestav svet. Znič skazených Titánov.", dl: "STIAHNUŤ ALFU", loreCont: "<h2>> DATA JADRA</h2><p>Voxelie je živá štruktúra.</p>", secretKey: "tajnyvoxel" }
-};
-
-let currentLang = 'en';
-
-function setLang(lang) {
-    currentLang = lang;
-    document.getElementById('subtitle').innerText = translations[lang].sub;
-    document.getElementById('btn-dl').innerText = translations[lang].dl;
 }
 
-function showLore() { typeWriter(translations[currentLang].loreCont, "content"); }
-function showBoss() { typeWriter("<h2>> TITANS</h2><p>Scanning peaks...</p>", "content"); }
-function showUpdates() { typeWriter("<h2>> LOG v0.1.28</h2><ul><li>Auth system added</li></ul>", "content"); }
+function logout() { localStorage.clear(); location.reload(); }
 
-function typeWriter(text, elementId) {
-    let i = 0; const el = document.getElementById(elementId); el.innerHTML = "";
+function setLang(l) {
+    currentLang = l;
+    document.getElementById('subtitle').innerText = translations[l].sub;
+    document.getElementById('btn-dl').innerText = translations[l].dl;
+    document.getElementById('content').innerText = "Data updated.";
+}
+
+function showLore() { typeWriter(gameData[currentLang]?.shortLore || gameData['en'].shortLore, "content"); }
+function showBoss() { typeWriter(gameData[currentLang]?.shortBoss || gameData['en'].shortBoss, "content"); }
+function showUpdates() { typeWriter("<h2>> LOG v0.1.30</h2><ul><li>Optimized Lore modules</li><li>Owner privileges established</li><li>UI Polish</li></ul>", "content"); }
+
+function typeWriter(text, elId) {
+    let i = 0; const el = document.getElementById(elId); el.innerHTML = "";
     function typing() {
         if (i < text.length) {
             if (text.charAt(i) === '<') { let end = text.indexOf('>', i); el.innerHTML += text.substring(i, end + 1); i = end + 1; }
             else { el.innerHTML += text.charAt(i); i++; }
-            setTimeout(typing, 10);
+            setTimeout(typing, 8);
         }
     }
     typing();
 }
 
-function toggleVoid() {
-    document.body.classList.toggle('void-mode');
-    const isVoid = document.body.classList.contains('void-mode');
-    document.getElementById('srv-status').innerText = isVoid ? "CORRUPTED" : "ONLINE";
-    document.getElementById('integrity-val').innerText = isVoid ? "CRITICAL" : "100%";
-    document.querySelector('h1').innerText = isVoid ? "V O I D" : "VOXELIA";
-}
-
 function checkCode() {
     const input = document.getElementById("codeInput").value.toLowerCase().trim();
-    if (input === translations[currentLang].secretKey) {
-        document.getElementById("secretText").innerText = "> ACCESS GRANTED";
-    } else {
-        document.getElementById("secretText").innerText = "> ACCESS DENIED";
-    }
+    const st = document.getElementById("secretText");
+    if (input === translations[currentLang].key) st.innerText = "> ACCESS GRANTED.";
+    else st.innerText = "> ACCESS DENIED.";
 }
+
+function toggleVoid() {
+    document.body.classList.toggle('void-mode');
+    document.querySelector('h1').innerText = document.body.classList.contains('void-mode') ? "V O I D" : "VOXELIA";
+}
+
+const langContainer = document.getElementById('lang-btns');
+Object.keys(translations).forEach(l => {
+    const b = document.createElement('button'); b.className = 'lang-btn'; b.innerText = l.toUpperCase();
+    b.onclick = () => setLang(l); langContainer.appendChild(b);
+});
+
+window.onload = () => {
+    if (localStorage.getItem('voxLogged') === 'true') showProfile();
+    setInterval(() => {
+        const n = new Date(); document.getElementById('clock').innerText = `TIME: ${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')}:${n.getSeconds().toString().padStart(2,'0')}`;
+    }, 1000);
+};
 
 const canvas = document.getElementById('bg-canvas'); const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth; canvas.height = window.innerHeight;
