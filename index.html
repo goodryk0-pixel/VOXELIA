@@ -2,129 +2,292 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Voxelia</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voxelia | Official Site</title>
 
 <style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: radial-gradient(circle at top, #0f0f0f, #000);
-    color: white;
-    text-align: center;
-    overflow-x: hidden;
-}
+    :root {
+        --primary: #3cff8f;
+        --secondary: #8a2be2;
+        --bg: #050510;
+        --panel: rgba(31, 31, 46, 0.8);
+    }
 
-/* glowing background effect */
-body::before {
-    content: "";
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle, rgba(0,255,150,0.1), transparent 70%);
-    animation: pulse 6s infinite;
-    z-index: -1;
-}
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg);
+        color: white;
+        text-align: center;
+        overflow-x: hidden;
+        background-attachment: fixed;
+    }
 
-@keyframes pulse {
-    0% {opacity: 0.4;}
-    50% {opacity: 1;}
-    100% {opacity: 0.4;}
-}
+    /* Animované pozadí */
+    #bg-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
 
-h1 {
-    font-size: 90px;
-    margin-top: 120px;
-    letter-spacing: 8px;
-    background: linear-gradient(45deg, #4CAF50, #66ffcc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+    /* Hlavní kontejner s animací příchodu */
+    .container {
+        animation: fadeIn 1.5s ease-out;
+        padding: 20px;
+    }
 
-p {
-    color: #aaa;
-    font-size: 22px;
-}
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-/* button */
-button {
-    margin-top: 50px;
-    padding: 18px 60px;
-    font-size: 22px;
-    border: none;
-    border-radius: 15px;
-    background: linear-gradient(45deg, #4CAF50, #00ffaa);
-    color: black;
-    cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 0 20px rgba(0,255,150,0.5);
-}
+    h1 {
+        font-size: clamp(60px, 10vw, 100px);
+        margin-top: 50px;
+        letter-spacing: 10px;
+        text-shadow: 0 0 20px var(--primary);
+        color: var(--primary);
+        margin-bottom: 10px;
+    }
 
-button:hover {
-    transform: scale(1.15);
-    box-shadow: 0 0 40px rgba(0,255,150,1);
-}
+    .subtitle {
+        font-style: italic;
+        color: #aaa;
+        margin-bottom: 40px;
+    }
 
-/* sections */
-.section {
-    margin-top: 150px;
-}
+    /* Stylová tlačítka */
+    .btn-group {
+        margin-bottom: 50px;
+    }
 
-/* cards */
-.card {
-    background: #111;
-    padding: 30px;
-    margin: 20px;
-    border-radius: 20px;
-    display: inline-block;
-    width: 260px;
-    transition: 0.4s;
-    box-shadow: 0 0 10px rgba(0,255,150,0.2);
-}
+    button {
+        padding: 15px 35px;
+        margin: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+        cursor: pointer;
+        border-radius: 5px;
+        transition: all 0.3s;
+        text-transform: uppercase;
+        position: relative;
+        overflow: hidden;
+    }
 
-.card:hover {
-    transform: translateY(-15px) scale(1.05);
-    box-shadow: 0 0 25px rgba(0,255,150,0.8);
-}
+    button:hover {
+        background: var(--primary);
+        color: black;
+        box-shadow: 0 0 30px var(--primary);
+        transform: scale(1.05);
+    }
 
-/* footer */
-.footer {
-    margin-top: 150px;
-    padding: 20px;
-    color: #666;
-}
+    /* Progress bar s efektem svícení */
+    .progress-container {
+        width: 80%;
+        max-width: 600px;
+        margin: 40px auto;
+    }
+
+    .progress {
+        background: #111;
+        border-radius: 20px;
+        height: 30px;
+        border: 1px solid #333;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        width: 27%; /* Aktuální progress */
+        height: 100%;
+        background: linear-gradient(90deg, var(--secondary), var(--primary));
+        box-shadow: 0 0 15px var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: bold;
+        color: black;
+        transition: width 2s ease-in-out;
+    }
+
+    /* Content sekce */
+    #content {
+        min-height: 150px;
+        background: var(--panel);
+        max-width: 700px;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 15px;
+        backdrop-filter: blur(5px);
+        border-left: 4px solid var(--primary);
+        animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-50px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Secret box */
+    .secret {
+        margin-top: 100px;
+        padding-bottom: 50px;
+    }
+
+    input {
+        padding: 12px;
+        border-radius: 5px;
+        border: 1px solid #444;
+        background: #000;
+        color: var(--primary);
+        outline: none;
+        width: 250px;
+    }
+
+    #secretText {
+        margin-top: 20px;
+        font-weight: bold;
+        height: 20px;
+        text-shadow: 0 0 10px var(--primary);
+    }
+
+    .dev-log {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 30px;
+    }
+
+    .log-item {
+        background: #1a1a2e;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 14px;
+        border: 1px solid #333;
+    }
 </style>
 </head>
 
 <body>
 
-<h1>VOXELIA</h1>
-<p>Build. Explore. Survive.</p>
+<canvas id="bg-canvas"></canvas>
 
-<button onclick="alert('Game coming soon 😄')">
-    DOWNLOAD
-</button>
+<div class="container">
+    <h1>VOXELIA</h1>
+    <p class="subtitle">Rebuild the world. Destroy the corrupted Titans.</p>
 
-<div class="section">
-    <h2>Features</h2>
+    <div class="btn-group">
+        <button onclick="showLore()">Lore</button>
+        <button onclick="showBoss()">Bosses</button>
+    </div>
 
-    <div class="card">🧱 Build Anything</div>
-    <div class="card">🌍 Infinite Worlds</div>
-    <div class="card">⚒️ Mine Resources</div>
-    <div class="card">🔥 Survival Mode</div>
+    <div id="content">Zvol si sekci výše...</div>
+
+    <div class="progress-container">
+        <p>Development Progress</p>
+        <div class="progress">
+            <div class="progress-bar">27% Alpha</div>
+        </div>
+    </div>
+
+    <h2>System Logs</h2>
+    <div class="dev-log">
+        <div class="log-item">v0.1 – Core Physics</div>
+        <div class="log-item">v0.2 – Voxel Engine</div>
+        <div class="log-item">v0.3 – AI Titans</div>
+    </div>
+
+    <div class="secret">
+        <h3>Decryption Terminal</h3>
+        <input id="codeInput" placeholder="Enter security code...">
+        <button onclick="checkCode()">Decrypt</button>
+        <div id="secretText"></div>
+    </div>
 </div>
 
-<div class="section">
-    <h2>About Voxelia</h2>
-    <p>
-        Voxelia is a voxel-based sandbox game where you can create, explore,
-        and survive in a limitless world made of blocks.
-    </p>
-</div>
+<script>
+// Částice na pozadí (Jednoduchý Matrix/Voxel efekt)
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
 
-<div class="footer">
-    © 2026 Voxelia
-</div>
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particles = [];
+for(let i = 0; i < 50; i++) {
+    particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 3 + 1,
+        speed: Math.random() * 0.5 + 0.1
+    });
+}
+
+function animateBg() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#3cff8f22";
+    particles.forEach(p => {
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+        p.y -= p.speed;
+        if(p.y < -10) p.y = canvas.height + 10;
+    });
+    requestAnimationFrame(animateBg);
+}
+animateBg();
+
+// Logika obsahu
+function showLore() {
+    const div = document.getElementById("content");
+    div.style.animation = 'none';
+    div.offsetHeight; /* trigger reflow */
+    div.style.animation = null;
+    div.innerHTML = `
+        <h2 style="color:var(--primary)">The Glitch in Reality</h2>
+        <p>Voxelia was a perfect simulation... until the <b>Great Corruption</b>.</p>
+        <p>The code started eating itself. The blocks became jagged, the light turned purple, and our protectors became our hunters.</p>
+        <p>You are a <i>Debugger</i> – the only entity capable of rewriting the world.</p>
+    `;
+}
+
+function showBoss() {
+    const div = document.getElementById("content");
+    div.style.animation = 'none';
+    div.offsetHeight; 
+    div.style.animation = null;
+    div.innerHTML = `
+        <h2 style="color:var(--primary)">Targeted Anomalies</h2>
+        <p><b>[01] Stone Titan</b> – High defense, low speed. Spawns stone pillars.</p>
+        <p><b>[02] Root Titan</b> – Regenerative armor. Roots players to the spot.</p>
+        <p><b>[03] Void Warden</b> – Reality bender. Can turn blocks invisible.</p>
+    `;
+}
+
+function checkCode() {
+    let code = document.getElementById("codeInput").value;
+    let st = document.getElementById("secretText");
+
+    if (code.toLowerCase() === "secretvoxel") {
+        st.style.color = "var(--primary)";
+        st.innerHTML = "SYSTEM OVERRIDE: 'Project Voxelia was an escape, not a game.'";
+        // Malý bonusový efekt
+        document.body.style.boxShadow = "inset 0 0 100px #3cff8f55";
+    } else {
+        st.style.color = "red";
+        st.innerHTML = "ACCESS DENIED.";
+    }
+}
+
+window.onresize = () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+};
+</script>
 
 </body>
 </html>
