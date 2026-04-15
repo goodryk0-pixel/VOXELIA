@@ -21,6 +21,7 @@
         text-align: center;
         overflow-x: hidden;
         cursor: crosshair;
+        transition: box-shadow 0.5s;
     }
 
     #bg-canvas {
@@ -36,21 +37,23 @@
         top: 20px;
         right: 20px;
         display: flex;
-        gap: 10px;
+        gap: 8px;
         flex-wrap: wrap;
         justify-content: flex-end;
-        max-width: 300px;
+        max-width: 350px;
+        z-index: 100;
     }
 
     .lang-btn {
         padding: 5px 10px;
-        font-size: 12px;
-        background: rgba(255,255,255,0.1);
+        font-size: 11px;
+        background: rgba(255,255,255,0.05);
         border: 1px solid var(--primary);
-        color: white;
+        color: var(--primary);
         cursor: pointer;
         transition: 0.3s;
         border-radius: 3px;
+        font-weight: bold;
     }
 
     .lang-btn:hover {
@@ -61,14 +64,22 @@
     .container {
         animation: fadeIn 1.5s ease-out;
         padding: 20px;
+        position: relative;
     }
 
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* GLITCH EFFECT */
     h1 {
         font-size: clamp(50px, 10vw, 90px);
         margin-top: 60px;
         letter-spacing: 10px;
         color: var(--primary);
         display: inline-block;
+        cursor: default;
     }
 
     h1:hover {
@@ -85,57 +96,86 @@
         100% { transform: translate(0); }
     }
 
+    /* DOWNLOAD BUTTON */
     .btn-download {
         background: var(--primary) !important;
         color: black !important;
         font-weight: 900 !important;
-        padding: 15px 40px !important;
-        font-size: 20px !important;
+        padding: 15px 45px !important;
+        font-size: 22px !important;
         box-shadow: 0 0 20px var(--primary);
         border: none !important;
         cursor: pointer;
         border-radius: 5px;
-        margin: 20px 0;
+        margin: 25px 0;
         text-transform: uppercase;
+        transition: 0.3s;
     }
 
-    .btn-download:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--primary); }
+    .btn-download:hover { 
+        transform: scale(1.1) rotate(-1deg); 
+        box-shadow: 0 0 40px var(--primary); 
+    }
 
-    button.nav-btn {
+    .nav-btn {
         padding: 12px 25px;
-        margin: 5px;
+        margin: 8px;
         background: transparent;
         border: 2px solid var(--primary);
         color: var(--primary);
         cursor: pointer;
         text-transform: uppercase;
+        font-weight: bold;
+        transition: 0.3s;
     }
 
-    button.nav-btn:hover { background: var(--primary); color: black; }
+    .nav-btn:hover { background: var(--primary); color: black; }
 
-    .progress-container { width: 80%; max-width: 500px; margin: 30px auto; }
-    .progress { background: #111; height: 20px; border-radius: 10px; overflow: hidden; border: 1px solid #333; }
+    /* PROGRESS BAR */
+    .progress-container { width: 80%; max-width: 500px; margin: 40px auto; }
+    .progress { background: #111; height: 25px; border-radius: 12px; overflow: hidden; border: 1px solid #333; }
     .progress-bar { 
         width: 27%; height: 100%; 
         background: linear-gradient(90deg, var(--secondary), var(--primary)); 
-        animation: gradientMove 3s infinite; 
+        background-size: 200% 200%;
+        animation: gradientMove 3s linear infinite; 
     }
 
-    @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+    @keyframes gradientMove { 
+        0% { background-position: 0% 50%; } 
+        100% { background-position: 200% 50%; } 
+    }
 
+    /* CONTENT BOX */
     #content {
-        min-height: 150px;
+        min-height: 160px;
         background: var(--panel);
         max-width: 700px;
         margin: 20px auto;
-        padding: 25px;
-        border-radius: 10px;
-        backdrop-filter: blur(5px);
+        padding: 30px;
+        border-radius: 12px;
+        backdrop-filter: blur(8px);
         border-left: 4px solid var(--primary);
         text-align: left;
+        line-height: 1.6;
     }
 
-    .secret input { padding: 10px; background: #000; color: var(--primary); border: 1px solid #444; }
+    /* SECRET BOX */
+    .secret { margin-top: 60px; padding-bottom: 80px; }
+    .secret input { 
+        padding: 12px; 
+        background: #000; 
+        color: var(--primary); 
+        border: 1px solid #444; 
+        outline: none;
+        width: 250px;
+    }
+    #secretText { 
+        margin-top: 20px; 
+        min-height: 24px; 
+        font-weight: bold; 
+        text-shadow: 0 0 10px var(--primary);
+    }
 </style>
 </head>
 <body>
@@ -166,7 +206,7 @@
         <button id="btn-boss" class="nav-btn" onclick="showBoss()">Bosses</button>
     </div>
 
-    <div id="content">Select a module...</div>
+    <div id="content">Select a module above...</div>
 
     <div class="progress-container">
         <p id="prog-text">SYSTEM RECONSTRUCTION</p>
@@ -175,8 +215,8 @@
 
     <div class="secret">
         <h3 id="secret-title">Decryption Terminal</h3>
-        <input id="codeInput" placeholder="Code...">
-        <button id="btn-decrypt" onclick="checkCode()">Decrypt</button>
+        <input id="codeInput" placeholder="Enter code...">
+        <button id="btn-decrypt" class="nav-btn" style="padding: 10px 20px; font-size: 14px;" onclick="checkCode()">Decrypt</button>
         <div id="secretText"></div>
     </div>
 </div>
@@ -185,115 +225,83 @@
 const translations = {
     en: {
         sub: "Rebuild the world. Destroy the corrupted Titans.",
-        dl: "DOWNLOAD ALPHA",
-        lore: "Lore",
-        boss: "Bosses",
-        prog: "SYSTEM RECONSTRUCTION",
-        secT: "Decryption Terminal",
-        decB: "Decrypt",
-        wait: "Select a module...",
-        dlMsg: "Preparing download...",
+        dl: "DOWNLOAD ALPHA", lore: "Lore", boss: "Bosses",
+        prog: "SYSTEM RECONSTRUCTION", secT: "Decryption Terminal", decB: "Decrypt",
+        wait: "Select a module...", dlMsg: "Preparing download...",
         loreCont: "<h2>> CORE DATA</h2><p>Voxelia is a living structure. A core glitch caused the corruption. You are the Rebuilder. Fix the code. Defeat the Titans.</p>",
         bossCont: "<h2>> TARGETS</h2><p><b>Stone Titan:</b> Mountain crusher.<br><b>Root Titan:</b> Life drainer.<br><b>Void Warden:</b> Reality glitch.</p>",
-        secMsg: "OVERRIDE: This world was a sanctuary."
+        secretKey: "secretvoxel",
+        bonusLore: "DATA RECOVERED: The Titans were once humans who tried to upload their consciousness to the grid."
     },
     cs: {
         sub: "Přestav svět. Znič zkažené Titány.",
-        dl: "STÁHNOUT ALFU",
-        lore: "Příběh",
-        boss: "Bossy",
-        prog: "REKONSTRUKCE SYSTÉMU",
-        secT: "Dešifrovací Terminál",
-        decB: "Dešifrovat",
-        wait: "Vyber modul...",
-        dlMsg: "Připravuji stahování...",
+        dl: "STÁHNOUT ALFU", lore: "Příběh", boss: "Bossy",
+        prog: "REKONSTRUKCE SYSTÉMU", secT: "Dešifrovací Terminál", decB: "Dešifrovat",
+        wait: "Vyber modul...", dlMsg: "Připravuji stahování...",
         loreCont: "<h2>> DATA JÁDRA</h2><p>Voxelie je živá struktura. Chyba v jádru způsobila zkázu. Ty jsi Rebuilder. Oprav kód. Poraz Titány.</p>",
         bossCont: "<h2>> CÍLE</h2><p><b>Stone Titan:</b> Drtič hor.<br><b>Root Titan:</b> Vysavač života.<br><b>Void Warden:</b> Chyba reality.</p>",
-        secMsg: "PŘEPSÁNO: Tento svět byl úkryt."
+        secretKey: "tajnyvoxel",
+        bonusLore: "DATA OBNOVENA: Titáni byli kdysi lidé, kteří se pokusili nahrát své vědomí do sítě."
     },
     sk: {
         sub: "Prestav svet. Znič skazených Titánov.",
-        dl: "STIAHNUŤ ALFU",
-        lore: "Príbeh",
-        boss: "Bossia",
-        prog: "REKONŠTRUKCIA SYSTÉMU",
-        secT: "Dešifrovací Terminál",
-        decB: "Dešifrovať",
-        wait: "Vyber modul...",
-        dlMsg: "Pripravujem sťahovanie...",
+        dl: "STIAHNUŤ ALFU", lore: "Príbeh", boss: "Bossia",
+        prog: "REKONŠTRUKCIA SYSTÉMU", secT: "Dešifrovací Terminál", decB: "Dešifrovať",
+        wait: "Vyber modul...", dlMsg: "Pripravujem sťahovanie...",
         loreCont: "<h2>> DATA JADRA</h2><p>Voxelie je živá štruktúra. Chyba v jadre spôsobila skazu. Ty si Rebuilder. Oprav kód. Poraz Titánov.</p>",
         bossCont: "<h2>> CIELE</h2><p><b>Stone Titan:</b> Drvič hôr.<br><b>Root Titan:</b> Vysávač života.<br><b>Void Warden:</b> Chyba reality.</p>",
-        secMsg: "PREPÍSANÉ: Tento svet bol úkryt."
+        secretKey: "tajnyvoxel",
+        bonusLore: "DATA OBNOVENÉ: Titáni boli kedysi ľudia, ktorí sa pokúsili nahrať svoje vedomie do siete."
     },
     de: {
         sub: "Baue die Welt neu auf. Zerstöre die korrupten Titanen.",
-        dl: "ALPHA HERUNTERLADEN",
-        lore: "Geschichte",
-        boss: "Bosse",
-        prog: "SYSTEMREKONSTRUKTION",
-        secT: "Entschlüsselungsterminal",
-        decB: "Entschlüsseln",
-        wait: "Modul auswählen...",
-        dlMsg: "Download wird vorbereitet...",
+        dl: "ALPHA HERUNTERLADEN", lore: "Geschichte", boss: "Bosse",
+        prog: "SYSTEMREKONSTRUKTION", secT: "Entschlüsselungsterminal", decB: "Entschlüsseln",
+        wait: "Modul auswählen...", dlMsg: "Download wird vorbereitet...",
         loreCont: "<h2>> KERNDATEN</h2><p>Voxelia ist eine lebendige Struktur. Ein Kernfehler verursachte die Korruption. Du bist der Rebuilder. Besiege die Titanen.</p>",
         bossCont: "<h2>> ZIELE</h2><p><b>Stein-Titan:</b> Bergzermalmer.<br><b>Wurzel-Titan:</b> Lebensabsauger.<br><b>Void-Wächter:</b> Realitätsfehler.</p>",
-        secMsg: "OVERRIDE: Diese Welt war ein Zufluchtsort."
+        secretKey: "geheimvoxel",
+        bonusLore: "DATEN WIEDERHERGESTELLT: Die Titanen waren einst Menschen, die versuchten, ihr Bewusstsein in das Netz hochzuladen."
     },
     pl: {
         sub: "Odbuduj świat. Zniszcz skażonych Tytanów.",
-        dl: "POBIERZ ALPHĘ",
-        lore: "Lore",
-        boss: "Bossowie",
-        prog: "REKONSTRUKCJA SYSTEMU",
-        secT: "Terminal deszyfrujący",
-        decB: "Deszyfruj",
-        wait: "Wybierz moduł...",
-        dlMsg: "Przygotowywanie pobierania...",
+        dl: "POBIERZ ALPHĘ", lore: "Lore", boss: "Bossowie",
+        prog: "REKONSTRUKCJA SYSTEMU", secT: "Terminal deszyfrujący", decB: "Deszyfruj",
+        wait: "Wybierz moduł...", dlMsg: "Przygotowywanie pobierania...",
         loreCont: "<h2>> DANE RDZENIA</h2><p>Voxelia to żywa struktura. Błąd rdzenia spowodował skażenie. Jesteś Rebuilderem. Napraw kod. Pokonaj Tytanów.</p>",
         bossCont: "<h2>> CELE</h2><p><b>Kamienny Tytan:</b> Kruszec gór.<br><b>Tytan Korzeni:</b> Wysysacz życia.<br><b>Strażnik Pustki:</b> Błąd rzeczywistości.</p>",
-        secMsg: "NADPISANIE: Ten świat był sanktuarium."
+        secretKey: "sekretnyvoxel",
+        bonusLore: "DANE ODZYSKANE: Tytani byli niegdyś ludźmi, którzy próbowali przesłać swoją świadomość do sieci."
     },
     es: {
         sub: "Reconstruye el mundo. Destruye a los Titanes corruptos.",
-        dl: "DESCARGAR ALPHA",
-        lore: "Historia",
-        boss: "Jefes",
-        prog: "RECONSTRUCCIÓN DEL SISTEMA",
-        secT: "Terminal de descifrado",
-        decB: "Descifrar",
-        wait: "Seleccione un módulo...",
-        dlMsg: "Preparando descarga...",
+        dl: "DESCARGAR ALPHA", lore: "Historia", boss: "Jefes",
+        prog: "RECONSTRUCCIÓN DEL SISTEMA", secT: "Terminal de descifrado", decB: "Descifrar",
+        wait: "Seleccione un módulo...", dlMsg: "Preparando descarga...",
         loreCont: "<h2>> DATOS DEL NÚCLEO</h2><p>Voxelia es una estructura viva. Un error del núcleo causó la corrupción. Eres el Rebuilder. Derrota a los Titanes.</p>",
         bossCont: "<h2>> OBJETIVOS</h2><p><b>Titán de Piedra:</b> Triturador de montañas.<br><b>Titán de Raíz:</b> Drenador de vida.<br><b>Guardián del Vacío:</b> Error de realidad.</p>",
-        secMsg: "ANULACIÓN: Este mundo era un santuario."
+        secretKey: "voxelosecreto",
+        bonusLore: "DATOS RECUPERADOS: Los Titanes fueron una vez humanos que intentaron subir su conciencia a la red."
     },
     sv: {
         sub: "Återuppbygg världen. Förstör de korrupta titanerna.",
-        dl: "LADDA NER ALPHA",
-        lore: "Historia",
-        boss: "Bossar",
-        prog: "SYSTEMÅTERSTÄLLNING",
-        secT: "Avkodningsterminal",
-        decB: "Avkoda",
-        wait: "Välj en modul...",
-        dlMsg: "Förbereder nedladdning...",
+        dl: "LADDA NER ALPHA", lore: "Historia", boss: "Bossar",
+        prog: "SYSTEMÅTERSTÄLLNING", secT: "Avkodningsterminal", decB: "Avkoda",
+        wait: "Välj en modul...", dlMsg: "Förbereder nedladdning...",
         loreCont: "<h2>> KÄRNDATA</h2><p>Voxelia är en levande struktur. Ett kärnfel orsakade korruptionen. Du är Rebuildern. Laga koden. Besegra titanerna.</p>",
         bossCont: "<h2>> MÅL</h2><p><b>Stentitan:</b> Bergskrossare.<br><b>Rottitan:</b> Livsdräner.<br><b>Void Warden:</b> Verklighetsfel.</p>",
-        secMsg: "ÖVERSKRIDNING: Denna värld var en tillflyktsort."
+        secretKey: "hemligvoxel",
+        bonusLore: "DATA ÅTERSTÄLLD: Titanerna var en gång människor som försökte ladda upp sitt medvetande till nätverket."
     },
     ja: {
         sub: "世界を再建せよ。汚染されたタイタンを破壊せよ。",
-        dl: "アルファ版をダウンロード",
-        lore: "伝承",
-        boss: "ボス",
-        prog: "システム再構築",
-        secT: "解読端末",
-        decB: "解読する",
-        wait: "モジュールを選択...",
-        dlMsg: "ダウンロードを準備中...",
+        dl: "アルファ版をダウンロード", lore: "伝承", boss: "ボス",
+        prog: "システム再構築", secT: "解読端末", decB: "解読する",
+        wait: "モジュールを選択...", dlMsg: "ダウンロードを準備中...",
         loreCont: "<h2>> コアデータ</h2><p>ヴォクセリアは生きた構造体です。コアのバグが汚染を引き起こしました。あなたはリビルダーです。コードを修正し、タイタンを倒してください。</p>",
         bossCont: "<h2>> ターゲット</h2><p><b>ストーン・タイタン:</b> 山を砕く者。<br><b>ルート・タイタン:</b> 命を吸う者。<br><b>ヴォイド・ワーデン:</b> 現実のバグ。</p>",
-        secMsg: "オーバーライド：この世界は聖域だった。"
+        secretKey: "himitsuvoxel",
+        bonusLore: "データ復旧：タイタンはかつて、自分の意識をネットワークにアップロードしようとした人間だった。"
     }
 };
 
@@ -330,25 +338,40 @@ function typeWriter(text, elementId) {
                 element.innerHTML += text.charAt(i);
                 i++;
             }
-            setTimeout(typing, 10);
+            setTimeout(typing, 12);
         }
     }
     typing();
 }
 
 function checkCode() {
-    const code = document.getElementById("codeInput").value.toLowerCase();
+    const inputField = document.getElementById("codeInput");
+    const code = inputField.value.toLowerCase().trim();
     const st = document.getElementById("secretText");
-    if (code === "secretvoxel") {
+    let foundBonus = null;
+
+    for (let lang in translations) {
+        if (code === translations[lang].secretKey.toLowerCase()) {
+            foundBonus = translations[lang].bonusLore;
+            break;
+        }
+    }
+
+    if (foundBonus) {
         st.style.color = "var(--primary)";
-        st.innerHTML = translations[currentLang].secMsg;
+        typeWriter(`> ACCESS GRANTED: ${foundBonus}`, "secretText");
+        document.body.style.boxShadow = "inset 0 0 150px var(--secondary)";
+        setTimeout(() => { document.body.style.boxShadow = "none"; }, 1500);
+        inputField.value = "";
     } else {
-        st.style.color = "red";
-        st.innerHTML = "ERR: 404";
+        st.style.color = "#ff4444";
+        st.innerHTML = "> ERROR: INVALID_KEY";
+        inputField.style.animation = "glitch 0.2s 2";
+        setTimeout(() => inputField.style.animation = "", 200);
     }
 }
 
-// Background Canvas Logic
+// Background Particles
 const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth; canvas.height = window.innerHeight;
