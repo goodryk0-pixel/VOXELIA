@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VOXELIA | Official Site</title>
+<title>VOXELIA | OS v2.0</title>
 <style>
     :root { 
         --primary: #3cff8f; 
@@ -21,25 +21,35 @@
     body.void-mode { --primary: #ff2a2a; --secondary: #4b0082; background: #0d0005; }
     #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
 
+    /* Top Bar & Alerts */
     .top-bar { display: flex; justify-content: space-between; padding: 20px; z-index: 100; position: relative; }
     .status-group { text-align: left; font-family: monospace; font-size: 11px; color: var(--primary); }
-    .lang-menu { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; max-width: 500px; }
-    .lang-btn { padding: 4px 8px; font-size: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--primary); color: var(--primary); cursor: pointer; border-radius: 3px; }
+    .lang-menu { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; max-width: 400px; }
+    .lang-btn { padding: 4px 6px; font-size: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--primary); color: var(--primary); cursor: pointer; border-radius: 3px; }
     .lang-btn:hover { background: var(--primary); color: #000; }
+
+    #broadcast-alert { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 600px; background: var(--owner); color: white; padding: 15px; z-index: 1000; transition: 0.5s; font-weight: bold; border-bottom: 2px solid white; box-shadow: 0 0 20px var(--owner); }
 
     h1 { font-size: clamp(40px, 8vw, 90px); margin: 20px 0; letter-spacing: 12px; color: var(--primary); cursor: pointer; text-shadow: 0 0 15px var(--primary); }
     
+    /* Profile & XP */
     .auth-container { background: var(--panel); border: 1px solid var(--primary); padding: 20px; max-width: 320px; margin: 10px auto; border-radius: 5px; }
     .auth-container input { width: 85%; padding: 10px; margin: 8px 0; background: #000; border: 1px solid var(--primary); color: white; }
     
     #user-profile { background: rgba(60, 255, 143, 0.1); padding: 20px; border-radius: 5px; margin: 20px auto; max-width: 500px; display: none; border: 1px solid var(--primary); }
-    .admin-badge { background: var(--owner); color: white; padding: 2px 10px; font-size: 10px; border-radius: 10px; display: none; margin: 0 auto 10px auto; width: fit-content; }
+    .xp-container { width: 100%; background: #222; height: 10px; border-radius: 5px; margin: 10px 0; overflow: hidden; border: 1px solid var(--primary); }
+    #xp-bar { height: 100%; background: var(--primary); width: 0%; transition: 0.5s; box-shadow: 0 0 10px var(--primary); }
+    
+    .inventory { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+    .item { width: 35px; height: 35px; border: 1px dashed var(--primary); font-size: 20px; line-height: 35px; opacity: 0.2; transition: 0.3s; }
+    .item.active { opacity: 1; border: 1px solid var(--primary); background: rgba(60, 255, 143, 0.1); text-shadow: 0 0 10px var(--primary); }
 
+    /* Admin Panel */
     #admin-panel { background: #1a0000; border: 2px solid var(--owner); padding: 15px; margin: 20px auto; max-width: 500px; display: none; text-align: left; font-family: monospace; }
-    .admin-ctrl { color: var(--owner); border: 1px solid var(--owner); padding: 5px; margin: 5px; cursor: pointer; background: none; font-size: 10px; }
 
+    /* Content Area */
     .btn-main { background: var(--primary); color: black; font-weight: 900; padding: 15px 40px; border: none; cursor: pointer; border-radius: 5px; margin: 10px; text-transform: uppercase; box-shadow: 0 0 15px var(--primary); transition: 0.3s; }
-    #content { min-height: 180px; background: var(--panel); max-width: 800px; margin: 20px auto; padding: 30px; border-radius: 5px; border-left: 5px solid var(--primary); text-align: left; line-height: 1.6; }
+    #content { min-height: 180px; background: var(--panel); max-width: 800px; margin: 20px auto; padding: 30px; border-radius: 5px; border-left: 5px solid var(--primary); text-align: left; line-height: 1.6; position: relative; }
     
     .secret { margin-top: 40px; padding-bottom: 50px; }
     .secret input { background:black; border:1px solid var(--primary); color:var(--primary); width:150px; padding:5px; }
@@ -47,12 +57,12 @@
 </head>
 <body>
 
+<div id="broadcast-alert">> [SYSTEM] <span id="alert-text"></span></div>
 <canvas id="bg-canvas"></canvas>
 
 <div class="top-bar">
     <div class="status-group">
         <div>SERVER: <span id="srv-text">ONLINE</span></div>
-        <div>INTEGRITY: 100%</div>
         <div id="clock">TIME: --:--:--</div>
     </div>
     <div class="lang-menu" id="lang-btns"></div>
@@ -72,121 +82,109 @@
     </div>
 
     <div id="user-profile">
-        <div id="admin-tag" class="admin-badge">SYSTEM OWNER</div>
+        <div id="admin-tag" style="background:var(--owner); color:white; padding:2px 10px; font-size:10px; border-radius:10px; display:none; margin: 0 auto 10px auto; width:fit-content;">SYSTEM OWNER</div>
         <h3>REBUILDER: <span id="display-name">---</span></h3>
-        <p id="display-rank">RANK: --- | XP: 0</p>
-        <button id="logout-btn" class="lang-btn" onclick="logout()">LOGOUT</button>
-        <button id="admin-btn-toggle" class="lang-btn" style="border-color:var(--owner); color:var(--owner); display:none;" onclick="toggleAdminPanel()">OPEN ADMIN PANEL</button>
+        <p id="display-rank-txt">RANK: SURVIVOR | LVL: 1</p>
+        <div class="xp-container"><div id="xp-bar"></div></div>
+        <div class="inventory">
+            <div id="item-crystal" class="item" title="Data Crystal">💎</div>
+            <div id="item-core" class="item" title="Void Core">🌀</div>
+        </div>
+        <div style="margin-top:15px;">
+            <button class="lang-btn" onclick="gainXP(20)" id="rebuild-btn">REBUILD SECTOR (+20 XP)</button>
+            <button id="logout-btn" class="lang-btn" onclick="logout()">LOGOUT</button>
+        </div>
+        <button id="admin-btn-toggle" class="lang-btn" style="border-color:var(--owner); color:var(--owner); display:none; margin-top:10px;" onclick="toggleAdminPanel()">ADMIN PANEL</button>
     </div>
 
     <div id="admin-panel">
         <div style="color:var(--owner); font-weight: bold; margin-bottom: 10px;">> ROOT_INTERFACE</div>
-        <div style="display:flex; gap:5px;">
-            <button class="admin-ctrl" onclick="toggleServerStatus()">TOGGLE SERVER</button>
-        </div>
+        <input type="text" id="broadcast-input" placeholder="Message..." style="width:90%; padding:5px; background:#000; border:1px solid var(--owner); color:white; margin-bottom:10px;">
+        <button class="lang-btn" style="width:100%; border-color:var(--owner); color:var(--owner);" onclick="sendBroadcast()">SEND GLOBAL ALERT</button>
     </div>
 
-    <p id="subtitle">Rebuild the world. Destroy the corrupted Titans.</p>
-    <button id="btn-dl" class="btn-main" onclick="alert('Accessing...')">DOWNLOAD ALPHA</button>
+    <p id="subtitle">Přestav svět. Znič zkažené Titány.</p>
+    <button id="btn-dl" class="btn-main" onclick="gainXP(5)">STÁHNOUT ALFU</button>
 
     <div style="margin: 20px;">
         <button id="btn-lore" class="lang-btn" style="padding:10px 15px;" onclick="showLore()">LORE</button>
-        <button id="btn-boss" class="lang-btn" style="padding:10px 15px;" onclick="showBoss()">BOSSES</button>
-        <button id="btn-upd" class="lang-btn" style="padding:10px 15px;" onclick="showUpdates()">UPDATES</button>
+        <button id="btn-boss" class="lang-btn" style="padding:10px 15px;" onclick="showBoss()">BOSSÉ</button>
+        <button id="btn-upd" class="lang-btn" style="padding:10px 15px;" onclick="showUpdates()">AKTUALIZACE</button>
     </div>
 
     <div id="content">Welcome, Rebuilder. Authorization required.</div>
 
     <div class="secret">
-        <h4 id="term-title">DECRYPTION TERMINAL</h4>
+        <h4 id="term-title">DEŠIFROVACÍ TERMINÁL</h4>
         <input id="codeInput" placeholder="Code...">
-        <button id="exec-btn" class="lang-btn" onclick="checkCode()">EXECUTE</button>
+        <button id="exec-btn" class="lang-btn" onclick="checkCode()">PROVÉST</button>
         <div id="secretText" style="margin-top:10px; font-size:12px; color:var(--primary); font-family: monospace; height: 20px;"></div>
     </div>
 </div>
 
 <script>
-// --- CONFIG & FILTR ---
 const OWNER_USER = "goodryk";
 const OWNER_PASS = "Jjsjjseco";
-const ALL_SECRET_KEYS = ["tajnyvoxel", "secretvoxel", "geheimvoxel", "sekretnyvoxel", "voxelosecreto", "hemligvoxel", "himitsuvoxel"];
 const BANNED_WORDS = ["debil", "hovno", "kurva", "prdel", "piča", "fuck", "shit", "idiot", "čurák"];
+const ALL_SECRET_KEYS = ["tajnyvoxel", "secretvoxel", "geheimvoxel", "sekretnyvoxel", "voxelosecreto", "hemligvoxel", "himitsuvoxel"];
 
+// --- 8 JAZYKŮ: KOMPLETNÍ PŘEKLAD ---
 const translations = {
-    cz: {
-        sub: "Přestav svět. Znič zkažené Titány.", dl: "STÁHNOUT ALFU", secret: "> KÓD PŘIJAT. ODEMYKÁM LORE...",
-        term: "DEŠIFROVACÍ TERMINÁL", exec: "PROVÉST", reg: "REGISTRACE", log: "PŘIHLÁSIT", out: "ODHLÁSIT",
-        welcome: "Vítej, Rebuildere. Pro přístup k datům je nutná autorizace.",
-        badName: "Jméno nebo heslo obsahuje nepovolená slova!",
-        loreS: "<h2>> LORE</h2><p>Voxelie byla digitální simulací. Velký Glitch ji roztříštil. Vy jste poslední Rebuildeři.</p>",
-        loreF: "<h2>> LORE [DEŠIFROVÁNO]</h2><p>Voxelie byla simulací. Jádro bylo infikováno virem 'VOID-0'. Jediná cesta je re-formace sektorů.</p>",
-        boss: "<h2>> TITÁNI</h2><p>1. Stone Titan (Peaks)<br>2. Void Serpent (Core)<br>3. Corrupted Core (Final)</p>",
-        upd: "<h2>> AKTUALIZACE</h2><p>v0.1.32 - Přidán filtr sprostých slov a kompletní překlady.</p>",
-        adminBtn: "OTEVŘÍT ADMIN PANEL"
+    cz: { sub: "Přestav svět. Znič zkažené Titány.", dl: "STÁHNOUT ALFU", term: "TERMINÁL", exec: "PROVÉST", reg: "REGISTRACE", log: "PŘIHLÁSIT", out: "ODHLÁSIT", welcome: "Vítej. Autorizace nutná.", bad: "Nepovolená slova!", lore: "LORE", boss: "BOSSÉ", upd: "AKTUALIZACE", admin: "ADMIN PANEL", rebuild: "PŘESTAVĚT SEKTOR (+20 XP)", 
+        txtLoreS: "<h2>> LORE</h2><p>Voxelie byla digitální simulací. Velký Glitch ji roztříštil.</p>", 
+        txtLoreF: "<h2>> LORE [DEŠIFROVÁNO]</h2><p>Jádro infikováno VOID-0. Re-formace je nutná.</p>",
+        txtBoss: "<h2>> TITÁNI</h2><p>1. Kamenný Titán<br>2. Void Serpent</p>",
+        txtUpd: "<h2>> AKTUALIZACE</h2><p>v2.0: 8 Jazyků, XP Systém, Profanity Filtr.</p>"
     },
-    sk: {
-        sub: "Prestav svet. Znič skazených Titánov.", dl: "STIAHNUŤ ALFU", secret: "> KÓD PRIJATÝ. ODEMYKÁM LORE...",
-        term: "DEŠIFROVACÍ TERMINÁL", exec: "VYKONAŤ", reg: "REGISTRÁCIA", log: "PRIHLÁSIŤ", out: "ODHLÁSIŤ",
-        welcome: "Vitaj, Rebuilder. Pre prístup k dátam je nutná autorizácia.",
-        badName: "Meno alebo heslo obsahuje nepovolené slová!",
-        loreS: "<h2>> LORE</h2><p>Voxelie bola digitálna simulácia. Veľký Glitch ju roztrieštil.</p>",
-        loreF: "<h2>> LORE [DEŠIFROVANÉ]</h2><p>Jadro bolo infikované vírusom 'VOID-0'.</p>",
-        boss: "<h2>> TITÁNI</h2><p>1. Stone Titan<br>2. Void Serpent<br>3. Corrupted Core</p>",
-        upd: "<h2>> AKTUALIZÁCIE</h2><p>v0.1.32 - Pridaná podpora jazykov.</p>",
-        adminBtn: "OTVORIŤ ADMIN PANEL"
+    sk: { sub: "Prestav svet. Znič skazených Titánov.", dl: "STIAHNUŤ ALFU", term: "TERMINÁL", exec: "VYKONAŤ", reg: "REGISTRÁCIA", log: "PRIHLÁSIŤ", out: "ODHLÁSIŤ", welcome: "Vitaj. Autorizácia nutná.", bad: "Nepovolené slová!", lore: "LORE", boss: "BOSSÉ", upd: "AKTUALIZÁCIE", admin: "ADMIN PANEL", rebuild: "PRESTAVAŤ SEKTOR (+20 XP)",
+        txtLoreS: "<h2>> LORE</h2><p>Voxelie bola digitálna simulácia. Veľký Glitch ju roztrieštil.</p>",
+        txtBoss: "<h2>> TITÁNI</h2><p>1. Kamenný Titán<br>2. Void Serpent</p>",
+        txtUpd: "<h2>> AKTUALIZÁCIE</h2><p>v2.0: Pridaný XP systém.</p>"
     },
-    en: {
-        sub: "Rebuild the world. Destroy the corrupted Titans.", dl: "DOWNLOAD ALPHA", secret: "> ACCESS GRANTED. UNLOCKING LORE...",
-        term: "DECRYPTION TERMINAL", exec: "EXECUTE", reg: "REGISTER", log: "LOGIN", out: "LOGOUT",
-        welcome: "Welcome, Rebuilder. Authorization required for data access.",
-        badName: "Username or password contains prohibited words!",
-        loreS: "<h2>> LORE</h2><p>Voxelia was a digital simulation. The Great Glitch shattered it.</p>",
-        loreF: "<h2>> LORE [DECRYPTED]</h2><p>Infected by VOID-0. Re-formation of sectors is the only way.</p>",
-        boss: "<h2>> TITANS</h2><p>1. Stone Titan<br>2. Void Serpent<br>3. Corrupted Core</p>",
-        upd: "<h2>> UPDATES</h2><p>v0.1.32 - Profanity filter and translations added.</p>",
-        adminBtn: "OPEN ADMIN PANEL"
+    en: { sub: "Rebuild the world. Destroy the Titans.", dl: "DOWNLOAD ALPHA", term: "TERMINAL", exec: "EXECUTE", reg: "REGISTER", log: "LOGIN", out: "LOGOUT", welcome: "Welcome. Authorization required.", bad: "Banned words detected!", lore: "LORE", boss: "BOSSES", upd: "UPDATES", admin: "ADMIN PANEL", rebuild: "REBUILD SECTOR (+20 XP)",
+        txtLoreS: "<h2>> LORE</h2><p>Voxelia was a digital simulation. The Great Glitch shattered it.</p>",
+        txtBoss: "<h2>> TITANS</h2><p>1. Stone Titan<br>2. Void Serpent</p>",
+        txtUpd: "<h2>> UPDATES</h2><p>v2.0: 8 Languages, XP System.</p>"
     },
-    ua: {
-        sub: "Перебудуй світ. Знищ зіпсованих Титанів.", dl: "ЗАВАНТАЖИТИ АЛЬФУ", secret: "> КОД ПРИЙНЯТО. РОЗБЛОКУВАННЯ...",
-        term: "ТЕРМІНАЛ ДЕШИФРУВАННЯ", exec: "ВИКОНАТИ", reg: "РЕЄСТРАЦІЯ", log: "УВІЙТИ", out: "ВИЙТИ",
-        welcome: "Вітаємо, Rebuilder. Для доступу до даних потрібна авторизація.",
-        badName: "Ім'я або пароль містять заборонені слова!",
-        loreS: "<h2>> ІСТОРІЯ</h2><p>Вокселія була цифровою симуляцією. Великий Глітч зруйнував її.</p>",
-        loreF: "<h2>> ІСТОРІЯ [РОЗШИФРОВАНО]</h2><p>Ядро інфіковано вірусом 'VOID-0'.</p>",
-        boss: "<h2>> ТИТАНИ</h2><p>1. Stone Titan<br>2. Void Serpent<br>3. Corrupted Core</p>",
-        upd: "<h2>> ОНОВЛЕННЯ</h2><p>v0.1.32 - Додано мовну підтримку.</p>",
-        adminBtn: "АДМІН-ПАНЕЛЬ"
+    ua: { sub: "Перебудуй світ. Знищ Титанів.", dl: "ЗАВАНТАЖИТИ", term: "ТЕРМІНАЛ", exec: "ВИКОНАТИ", reg: "РЕЄСТРАЦІЯ", log: "УВІЙТИ", out: "ВИЙТИ", welcome: "Потрібна авторизація.", bad: "Заборонені слова!", lore: "ІСТОРІЯ", boss: "ТИТАНИ", upd: "ОНОВЛЕННЯ", admin: "АДМІН", rebuild: "ВІДБУДОВАТИ (+20 XP)",
+        txtLoreS: "<h2>> ІСТОРІЯ</h2><p>Вокселія була цифровою симуляцією. Великий Глітч зруйнував її.</p>",
+        txtBoss: "<h2>> ТИТАНИ</h2><p>1. Кам'яний Титан<br>2. Void Serpent</p>",
+        txtUpd: "<h2>> ОНОВЛЕННЯ</h2><p>v2.0: Додано XP та мови.</p>"
     },
-    pl: {
-        sub: "Odbuduj świat. Zniszcz skażonych Tytanów.", dl: "POBIERZ ALPHĘ", secret: "> KOD PRZYJĘTY. ODBLOKOWYWANIE...",
-        term: "TERMINAL DESZYFROWANIA", exec: "WYKONAJ", reg: "REJESTRACJA", log: "ZALOGUJ", out: "WYLOGUJ",
-        welcome: "Witaj, Rebuilderze. Autoryzacja wymagana.",
-        badName: "Nazwa użytkownika lub hasło zawiera niedozwolone słowa!",
-        loreS: "<h2>> LORE</h2><p>Voxelia była symulacją. Wielki Glitch ją roztrzaskał.</p>",
-        loreF: "<h2>> LORE [ODSZYFROWANE]</h2><p>Rdzeń zainfekowany VOID-0.</p>",
-        boss: "<h2>> TYTANI</h2><p>1. Stone Titan<br>2. Void Serpent<br>3. Corrupted Core</p>",
-        upd: "<h2>> AKTUALIZACJE</h2><p>v0.1.32 - Wsparcie wielojęzyczne.</p>",
-        adminBtn: "PANEL ADMINA"
+    pl: { sub: "Odbuduj świat. Zniszcz Tytanów.", dl: "POBIERZ ALPHĘ", term: "TERMINAL", exec: "WYKONAJ", reg: "REJESTRACJA", log: "ZALOGUJ", out: "WYLOGUJ", welcome: "Autoryzacja wymagana.", bad: "Zakazane słowa!", lore: "LORE", boss: "TYTANI", upd: "AKTUALIZACJE", admin: "ADMIN PANEL", rebuild: "ODBUDUJ SEKTOR (+20 XP)",
+        txtLoreS: "<h2>> LORE</h2><p>Voxelia była symulacją. Wielki Glitch ją roztrzaskał.</p>",
+        txtBoss: "<h2>> TYTANI</h2><p>1. Kamienny Tytan<br>2. Void Serpent</p>",
+        txtUpd: "<h2>> AKTUALIZACJE</h2><p>v2.0: System XP i 8 języków.</p>"
     },
-    de: {
-        sub: "Baue die Welt neu auf. Zerstöre die Titanen.", dl: "DOWNLOAD", secret: "> ZUGRIFF GEWÄHRT...",
-        term: "ENTSCHLÜSSELUNG", exec: "AUSFÜHREN", reg: "REGISTRIEREN", log: "LOGIN", out: "LOGOUT",
-        welcome: "Willkommen. Autorisierung erforderlich.",
-        badName: "Benutzername oder Passwort enthält verbotene Wörter!",
-        loreS: "<h2>> LORE</h2><p>Voxelia war eine Simulation. Der Great Glitch hat sie zerstört.</p>",
-        loreF: "<h2>> LORE [ENTSCHLÜSSELT]</h2><p>Kern mit VOID-0 infiziert.</p>",
-        boss: "<h2>> TITANEN</h2><p>1. Stone Titan<br>2. Void Serpent<br>3. Corrupted Core</p>",
-        upd: "<h2>> UPDATES</h2><p>v0.1.32 - Mehrsprachigkeit hinzugefügt.</p>",
-        adminBtn: "ADMIN-PANEL"
+    de: { sub: "Baue die Welt neu auf.", dl: "DOWNLOAD", term: "TERMINAL", exec: "AUSFÜHREN", reg: "REGISTRIEREN", log: "LOGIN", out: "LOGOUT", welcome: "Autorisierung erforderlich.", bad: "Verbotene Wörter!", lore: "LORE", boss: "BOSSEN", upd: "UPDATES", admin: "ADMIN PANEL", rebuild: "SEKTOR BAUEN (+20 XP)",
+        txtLoreS: "<h2>> LORE</h2><p>Voxelia war eine digitale Simulation.</p>",
+        txtBoss: "<h2>> BOSSEN</h2><p>1. Steintitan<br>2. Void Serpent</p>",
+        txtUpd: "<h2>> UPDATES</h2><p>v2.0: XP-System hinzugefügt.</p>"
+    },
+    es: { sub: "Reconstruye el mundo.", dl: "DESCARGAR", term: "TERMINAL", exec: "EJECUTAR", reg: "REGISTRO", log: "LOGIN", out: "SALIR", welcome: "Autorización requerida.", bad: "¡Palabras prohibidas!", lore: "LORE", boss: "JEFES", upd: "NOTICIAS", admin: "ADMIN", rebuild: "RECONSTRUIR (+20 XP)",
+        txtLoreS: "<h2>> LORE</h2><p>Voxelia era una simulación digital.</p>",
+        txtBoss: "<h2>> JEFES</h2><p>1. Titán de Piedra<br>2. Serpiente del Vacío</p>",
+        txtUpd: "<h2>> NOTICIAS</h2><p>v2.0: Sistema de XP y 8 idiomas.</p>"
+    },
+    fr: { sub: "Reconstruisez le monde.", dl: "TÉLÉCHARGER", term: "TERMINAL", exec: "EXÉCUTER", reg: "S'INSCRIRE", log: "CONNEXION", out: "SORTIR", welcome: "Autorisation requise.", bad: "Mots interdits détectés!", lore: "LORE", boss: "BOSS", upd: "MISES À JOUR", admin: "ADMIN", rebuild: "RECONSTRUIRE (+20 XP)",
+        txtLoreS: "<h2>> LORE</h2><p>Voxelia était une simulation numérique.</p>",
+        txtBoss: "<h2>> BOSS</h2><p>1. Titan de Pierre<br>2. Void Serpent</p>",
+        txtUpd: "<h2>> MISES À JOUR</h2><p>v2.0: Système XP et 8 langues.</p>"
     }
 };
 
 let currentLang = 'cz';
+let userXP = 0;
+let userLvl = 1;
 let loreUnlocked = false;
+const ranks = ["SURVIVOR", "REBUILDER", "SENTINEL", "VOXEL MASTER", "VOID WALKER"];
 
+// --- FUNKCE PŘEKLADU ---
 function setLang(l) {
     currentLang = l;
     const t = translations[l] || translations['en'];
+    
+    // UI Texty
     document.getElementById('subtitle').innerText = t.sub;
     document.getElementById('btn-dl').innerText = t.dl;
     document.getElementById('term-title').innerText = t.term;
@@ -194,123 +192,132 @@ function setLang(l) {
     document.getElementById('reg-btn').innerText = t.reg;
     document.getElementById('log-btn').innerText = t.log;
     document.getElementById('logout-btn').innerText = t.out;
-    document.getElementById('btn-lore').innerText = (l === 'ua' ? 'ІСТОРІЯ' : 'LORE');
-    document.getElementById('btn-boss').innerText = (l === 'cz' || l === 'sk' ? 'BOSSÉ' : (l === 'ua' ? 'ТИТАНИ' : 'BOSSES'));
-    document.getElementById('btn-upd').innerText = (l === 'ua' ? 'ОНОВЛЕННЯ' : (l === 'cz' || l === 'sk' ? 'AKTUALIZACE' : 'UPDATES'));
-    if(document.getElementById('admin-btn-toggle')) document.getElementById('admin-btn-toggle').innerText = t.adminBtn;
+    document.getElementById('btn-lore').innerText = t.lore;
+    document.getElementById('btn-boss').innerText = t.boss;
+    document.getElementById('btn-upd').innerText = t.upd;
+    document.getElementById('rebuild-btn').innerText = t.rebuild;
+    if(document.getElementById('admin-btn-toggle')) document.getElementById('admin-btn-toggle').innerText = t.admin;
 
-    const currentHTML = document.getElementById('content').innerHTML;
-    if (currentHTML.includes("LORE") || currentHTML.includes("ІСТОРІЯ")) showLore();
-    else if (currentHTML.includes("TITAN") || currentHTML.includes("ТИТАН")) showBoss();
-    else if (currentHTML.includes("v0.1.32")) showUpdates();
-    else document.getElementById('content').innerText = t.welcome;
+    // Dynamická aktualizace obsahu v okně
+    const content = document.getElementById('content');
+    const currentHTML = content.innerHTML;
+    if (currentHTML.includes("LORE") || currentHTML.includes("ІСТОРІЯ")) {
+        content.innerHTML = loreUnlocked ? t.txtLoreF : t.txtLoreS;
+    } else if (currentHTML.includes("TITAN") || currentHTML.includes("BOSS") || currentHTML.includes("JEFES") || currentHTML.includes("ТИТАН")) {
+        content.innerHTML = t.txtBoss;
+    } else if (currentHTML.includes("v2.0")) {
+        content.innerHTML = t.txtUpd;
+    } else {
+        content.innerText = t.welcome;
+    }
 }
 
-function checkToxic(text) {
-    return BANNED_WORDS.some(word => text.toLowerCase().includes(word));
+// --- HERNÍ SYSTÉM ---
+function gainXP(amount) {
+    userXP += amount;
+    if (userXP >= 100) {
+        userXP = 0; userLvl++;
+        sendBroadcast("LEVEL UP! LVL " + userLvl);
+    }
+    updateProfileUI();
+    saveGame();
 }
 
+function updateProfileUI() {
+    document.getElementById('xp-bar').style.width = userXP + "%";
+    const rIndex = Math.min(userLvl - 1, ranks.length - 1);
+    document.getElementById('display-rank-txt').innerText = `RANK: ${ranks[rIndex]} | LVL: ${userLvl}`;
+}
+
+function sendBroadcast(msg = null) {
+    const text = msg || document.getElementById('broadcast-input').value;
+    const alertBox = document.getElementById('broadcast-alert');
+    document.getElementById('alert-text').innerText = text;
+    alertBox.style.top = "0";
+    setTimeout(() => alertBox.style.top = "-100px", 4000);
+}
+
+function checkCode() {
+    const input = document.getElementById("codeInput").value.toLowerCase().trim();
+    const st = document.getElementById("secretText");
+    if (ALL_SECRET_KEYS.includes(input)) {
+        st.innerText = "> DECRYPTED. ITEM FOUND.";
+        document.getElementById('item-crystal').classList.add('active');
+        loreUnlocked = true; gainXP(50);
+        showLore();
+    } else { st.innerText = "> INVALID."; }
+}
+
+// --- AUTH & CORE ---
 function register() {
     const user = document.getElementById('username').value.trim();
     const pass = document.getElementById('password').value;
-    const t = translations[currentLang] || translations['en'];
-    
-    if (!user || !pass) return alert('Fill fields!');
-    if (checkToxic(user) || checkToxic(pass)) return alert(t.badName);
-    
+    const t = translations[currentLang];
+    if (BANNED_WORDS.some(w => user.toLowerCase().includes(w) || pass.toLowerCase().includes(w))) return alert(t.bad);
     let users = JSON.parse(localStorage.getItem('voxelia_users') || "[]");
-    if (users.find(u => u.name.toLowerCase() === user.toLowerCase()) || user.toLowerCase() === OWNER_USER) return alert('Taken!');
-    
-    users.push({name: user, pass: pass, rank: "ALPHA SURVIVOR", xp: 0});
+    users.push({name: user, pass: pass, xp: 0, lvl: 1});
     localStorage.setItem('voxelia_users', JSON.stringify(users));
-    alert('Authorized.');
+    alert('OK.');
 }
 
 function login() {
     const uInput = document.getElementById('username').value.trim();
     const pInput = document.getElementById('password').value;
-    if (uInput === OWNER_USER && pInput === OWNER_PASS) return completeLogin(OWNER_USER, "OWNER", 999999);
+    if (uInput === OWNER_USER && pInput === OWNER_PASS) return completeLogin(OWNER_USER, "OWNER");
     let users = JSON.parse(localStorage.getItem('voxelia_users') || "[]");
     const found = users.find(u => u.name === uInput && u.pass === pInput);
-    if (found) completeLogin(found.name, found.rank, found.xp);
+    if (found) completeLogin(found.name, "USER");
     else alert('Denied.');
 }
 
-function completeLogin(name, rank, xp) {
+function completeLogin(name, role) {
     localStorage.setItem('voxLogged', 'true');
     localStorage.setItem('voxCurrentName', name);
-    localStorage.setItem('voxCurrentRank', rank);
-    localStorage.setItem('voxCurrentXP', xp);
+    localStorage.setItem('voxRole', role);
     location.reload();
 }
 
 function showProfile() {
-    const name = localStorage.getItem('voxCurrentName');
-    const rank = localStorage.getItem('voxCurrentRank');
-    const xp = localStorage.getItem('voxCurrentXP');
-    const t = translations[currentLang] || translations['en'];
     document.getElementById('auth-box').style.display = 'none';
     document.getElementById('user-profile').style.display = 'block';
-    const nEl = document.getElementById('display-name');
-    nEl.innerText = name.toUpperCase();
-    document.getElementById('display-rank').innerText = `RANK: ${rank} | XP: ${xp}`;
-    if (rank === "OWNER") {
-        nEl.style.color = "var(--owner)";
+    document.getElementById('display-name').innerText = localStorage.getItem('voxCurrentName').toUpperCase();
+    userXP = parseInt(localStorage.getItem('voxXP') || 0);
+    userLvl = parseInt(localStorage.getItem('voxLvl') || 1);
+    if (localStorage.getItem('voxRole') === 'OWNER') {
         document.getElementById('admin-tag').style.display = 'block';
         document.getElementById('admin-btn-toggle').style.display = 'inline-block';
-        document.getElementById('admin-btn-toggle').innerText = t.adminBtn;
+        document.getElementById('display-name').style.color = "var(--owner)";
     }
+    updateProfileUI();
 }
 
-function showLore() { const t = translations[currentLang]; typeWriter(loreUnlocked ? t.loreF : t.loreS, "content"); }
-function showBoss() { const t = translations[currentLang]; typeWriter(t.boss, "content"); }
-function showUpdates() { const t = translations[currentLang]; typeWriter(t.upd, "content"); }
-
-function checkCode() {
-    const input = document.getElementById("codeInput").value.toLowerCase().trim();
-    const st = document.getElementById("secretText");
-    const t = translations[currentLang];
-    if (ALL_SECRET_KEYS.includes(input)) {
-        st.innerText = t.secret;
-        loreUnlocked = true;
-        setTimeout(showLore, 800);
-    } else { st.innerText = "> ACCESS DENIED."; }
-}
-
-function typeWriter(text, elId) {
-    let i = 0; const el = document.getElementById(elId); el.innerHTML = "";
-    function typing() {
-        if (i < text.length) {
-            if (text.charAt(i) === '<') { let end = text.indexOf('>', i); el.innerHTML += text.substring(i, end + 1); i = end + 1; }
-            else { el.innerHTML += text.charAt(i); i++; }
-            setTimeout(typing, 8);
-        }
-    }
-    typing();
-}
-
+function saveGame() { localStorage.setItem('voxXP', userXP); localStorage.setItem('voxLvl', userLvl); }
 function logout() { localStorage.clear(); location.reload(); }
 function toggleAdminPanel() { const p = document.getElementById('admin-panel'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; }
-function toggleServerStatus() { const s = document.getElementById('srv-text'); s.innerText = s.innerText === 'ONLINE' ? 'OFFLINE' : 'ONLINE'; s.style.color = s.innerText === 'ONLINE' ? 'var(--primary)' : 'var(--owner)'; }
-function toggleVoid() { document.body.classList.toggle('void-mode'); document.querySelector('h1').innerText = document.body.classList.contains('void-mode') ? "V O I D" : "VOXELIA"; }
+function toggleVoid() { document.body.classList.toggle('void-mode'); }
+function showLore() { document.getElementById('content').innerHTML = loreUnlocked ? translations[currentLang].txtLoreF : translations[currentLang].txtLoreS; }
+function showBoss() { document.getElementById('content').innerHTML = translations[currentLang].txtBoss; }
+function showUpdates() { document.getElementById('content').innerHTML = translations[currentLang].txtUpd; }
 
+// Init
 const langContainer = document.getElementById('lang-btns');
-['cz', 'sk', 'en', 'ua', 'pl', 'de'].forEach(l => {
+Object.keys(translations).forEach(l => {
     const b = document.createElement('button'); b.className = 'lang-btn'; b.innerText = l.toUpperCase();
     b.onclick = () => setLang(l); langContainer.appendChild(b);
 });
 
-window.onload = () => { 
-    if (localStorage.getItem('voxLogged') === 'true') showProfile(); 
+window.onload = () => {
+    if (localStorage.getItem('voxLogged') === 'true') showProfile();
     setLang('cz');
-    setInterval(() => { const n = new Date(); document.getElementById('clock').innerText = `TIME: ${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')}:${n.getSeconds().toString().padStart(2,'0')}`; }, 1000); 
+    setInterval(() => { const n = new Date(); document.getElementById('clock').innerText = `TIME: ${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')}:${n.getSeconds().toString().padStart(2,'0')}`; }, 1000);
 };
 
+// Canvas Particles
 const canvas = document.getElementById('bg-canvas'); const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth; canvas.height = window.innerHeight;
 const parts = [];
-for(let i=0; i<60; i++) parts.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, v:Math.random()*0.5});
-function anim() { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary') + "33"; parts.forEach(p => { ctx.fillRect(p.x, p.y, 2, 2); p.y -= p.v; if(p.y<0) p.y=canvas.height; }); requestAnimationFrame(anim); }
+for(let i=0; i<50; i++) parts.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, v:Math.random()*0.5});
+function anim() { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = "#3cff8f33"; parts.forEach(p => { ctx.fillRect(p.x, p.y, 2, 2); p.y -= p.v; if(p.y<0) p.y=canvas.height; }); requestAnimationFrame(anim); }
 anim();
 </script>
 </body>
