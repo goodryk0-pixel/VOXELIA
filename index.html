@@ -17,7 +17,7 @@
     .lang-btn:hover { background: var(--primary); color: #000; }
 
     /* Broadcast Alert (Global) */
-    #global-broadcast { position: fixed; top: -100px; left: 0; width: 100%; background: var(--owner); color: white; padding: 20px; z-index: 2000; transition: 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.28); font-weight: bold; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 5px 30px rgba(255,0,0,0.5); }
+    #global-broadcast { position: fixed; top: -150px; left: 0; width: 100%; background: var(--owner); color: white; padding: 20px; z-index: 2000; transition: 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.28); font-weight: bold; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 5px 30px rgba(255,0,0,0.5); border-bottom: 3px solid white; }
 
     h1 { font-size: clamp(30px, 10vw, 80px); letter-spacing: 15px; color: var(--primary); text-shadow: 0 0 20px var(--primary); margin: 20px 0; }
     
@@ -35,7 +35,7 @@
 </head>
 <body>
 
-<div id="global-broadcast">> [GLOBAL OVERRIDE]: <span id="broadcast-msg"></span></div>
+<div id="global-broadcast">> [GLOBAL ALERT] <br><span id="broadcast-msg"></span></div>
 <canvas id="bg-canvas"></canvas>
 
 <div class="top-bar">
@@ -63,7 +63,8 @@
     <h3>USER: <span id="p-name">---</span></h3>
     <p id="p-rank">RANK: SURVIVOR | LVL: 1</p>
     <div class="xp-bar-bg"><div id="xp-bar-fill"></div></div>
-    <button class="lang-btn" onclick="gainXP(25)">REBUILD SECTOR (+25 XP)</button>
+    <div id="cooldown-info" style="font-size: 10px; color: var(--primary); margin-bottom: 10px;">Ready to rebuild.</div>
+    <button class="lang-btn" onclick="claimHourlyXP()" id="rebuild-btn">REBUILD SECTOR (+25 XP)</button>
     <button class="lang-btn" onclick="logout()">LOGOUT</button>
     <button id="admin-btn" class="lang-btn" style="border-color:var(--owner); color:var(--owner); display:none;" onclick="toggleAdmin()">ADMIN PANEL</button>
 </div>
@@ -75,7 +76,7 @@
 </div>
 
 <p id="subtitle">Rebuild the world. Destroy the Titans.</p>
-<button class="btn-main" onclick="gainXP(10)" id="t-dl">DOWNLOAD ALPHA</button>
+<button class="btn-main" onclick="claimDownloadXP()" id="t-dl">DOWNLOAD ALPHA</button>
 
 <div style="margin:20px;">
     <button class="lang-btn" style="padding:10px;" onclick="showTab('lore')">LORE</button>
@@ -85,21 +86,30 @@
 
 <div id="content">Initializing terminal...</div>
 
+<div style="margin-top: 30px; padding-bottom: 50px;">
+    <h4 id="term-title">DECRYPTION TERMINAL</h4>
+    <input id="codeInput" placeholder="Enter code...">
+    <button class="lang-btn" onclick="checkCode()">EXECUTE</button>
+    <div id="secretText" style="margin-top:10px; font-size:12px; font-family:monospace; color:var(--primary);"></div>
+</div>
+
 <script>
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1494279852457459713/ckwnkgfNE4lwPMzJCimxuxQOSYnJzqg-gJYWFQrOxYMTbfG5b6-ucJALufEXnOVaqj7p";
 
-const translations = {
-    cz: { sub: "Přestav svět. Znič Titány.", dl: "STÁHNOUT ALFU", reg: "REGISTRACE", log: "PŘIHLÁSIT", lore: "LORE", boss: "BOSSÉ", upd: "AKTUALIZACE" },
-    sk: { sub: "Prestav svet. Znič Titánov.", dl: "STIAHNUŤ ALFU", reg: "REGISTRÁCIA", log: "PRIHLÁSIŤ", lore: "LORE", boss: "BOSSÉ", upd: "AKTUALIZÁCIE" },
-    en: { sub: "Rebuild the world. Destroy the Titans.", dl: "DOWNLOAD ALPHA", reg: "REGISTER", log: "LOGIN", lore: "LORE", boss: "BOSSES", upd: "UPDATES" },
-    ua: { sub: "Відбудуй світ. Знищ Титанів.", dl: "ЗАВАНТАЖИТИ", reg: "РЕЄСТРАЦІЯ", log: "УВІЙТИ", lore: "ІСТОРІЯ", boss: "ТИТАНИ", upd: "ОНОВЛЕННЯ" },
-    pl: { sub: "Odbuduj świat. Zniszcz Tytanów.", dl: "POBIERZ ALPHĘ", reg: "REJESTRACJA", log: "ZALOGUJ", lore: "LORE", boss: "TYTANI", upd: "AKTUALIZACJE" },
-    de: { sub: "Baue die Welt neu auf.", dl: "DOWNLOAD", reg: "REGISTRIEREN", log: "LOGIN", lore: "LORE", boss: "BOSSEN", upd: "UPDATES" },
-    es: { sub: "Reconstruye el mundo.", dl: "DESCARGAR", reg: "REGISTRO", log: "LOGIN", lore: "LORE", boss: "JEFES", upd: "NOTICIAS" },
-    fr: { sub: "Reconstruisez le monde.", dl: "TÉLÉCHARGER", reg: "S'INSCRIRE", log: "CONNEXION", lore: "LORE", boss: "BOSS", upd: "MISES À JOUR" }
+// --- ADMIN ACCOUNTS ---
+const ADMINS = {
+    "goodryk": "Jjsjjseco",
+    "Zyrodex": "Zyrodex123"
 };
 
-let currentLang = 'cz';
+const translations = {
+    cz: { sub: "Přestav svět. Znič Titány.", dl: "STÁHNOUT ALFU", reg: "REGISTRACE", log: "PŘIHLÁSIT", lore: "LORE", boss: "BOSSÉ", upd: "AKTUALIZACE" },
+    en: { sub: "Rebuild the world. Destroy the Titans.", dl: "DOWNLOAD ALPHA", reg: "REGISTER", log: "LOGIN", lore: "LORE", boss: "BOSSES", upd: "UPDATES" },
+    sk: { sub: "Prestav svet. Znič Titánov.", dl: "STIAHNUŤ ALFU", reg: "REGISTRÁCIA", log: "PRIHLÁSIŤ", lore: "LORE", boss: "BOSSÉ", upd: "AKTUALIZÁCIE" },
+    pl: { sub: "Odbuduj świat. Zniszcz Tytanów.", dl: "POBIERZ ALPHĘ", reg: "REJESTRACJA", log: "ZALOGUJ", lore: "LORE", boss: "TYTANI", upd: "AKTUALIZACJE" },
+    de: { sub: "Baue die Welt neu auf.", dl: "DOWNLOAD", reg: "REGISTRIEREN", log: "LOGIN", lore: "LORE", boss: "BOSSEN", upd: "UPDATES" }
+};
+
 let userXP = 0;
 let userLvl = 1;
 
@@ -114,69 +124,90 @@ async function postToDiscord(content) {
     } catch (e) { console.error("Discord Fail"); }
 }
 
-// --- GLOBAL WEB TRIGGER ---
+// --- XP LOGIC (WITH COOLDOWNS & LIMITS) ---
+function claimHourlyXP() {
+    const lastClaim = localStorage.getItem('voxLastClaim') || 0;
+    const now = Date.now();
+    const oneHour = 3600000;
+
+    if (now - lastClaim < oneHour) {
+        const remaining = Math.ceil((oneHour - (now - lastClaim)) / 60000);
+        document.getElementById('content').innerText = `[COOLDOWN]: Rebuild available in ${remaining} minutes.`;
+        return;
+    }
+
+    localStorage.setItem('voxLastClaim', now);
+    gainXP(25, "Hourly Rebuild");
+}
+
+function claimDownloadXP() {
+    if (localStorage.getItem('voxDlClaimed') === 'true') {
+        document.getElementById('content').innerText = "[SYSTEM]: Download reward already claimed.";
+        return;
+    }
+    localStorage.setItem('voxDlClaimed', 'true');
+    gainXP(15, "Initial Download");
+}
+
+function checkCode() {
+    const code = document.getElementById("codeInput").value.toLowerCase().trim();
+    if (code === "tajnyvoxel") {
+        if (localStorage.getItem('voxCodeClaimed') === 'true') {
+            document.getElementById('secretText').innerText = "> XP ALREADY CLAIMED FOR THIS CODE.";
+            return;
+        }
+        localStorage.setItem('voxCodeClaimed', 'true');
+        gainXP(50, "Terminal Decryption");
+        document.getElementById('secretText').innerText = "> ACCESS GRANTED. +50 XP.";
+    } else {
+        document.getElementById('secretText').innerText = "> INVALID ACCESS KEY.";
+    }
+}
+
+function gainXP(amt, reason) {
+    userXP += amt;
+    if(userXP >= 100) { 
+        userXP -= 100; 
+        userLvl++; 
+        postToDiscord(`🆙 **${localStorage.getItem('voxName')}** reached Level ${userLvl}!`);
+    }
+    updateUI();
+    save();
+    postToDiscord(`📈 **${localStorage.getItem('voxName')}** +${amt} XP (${reason})`);
+}
+
+// --- GLOBAL WEB BROADCAST ---
 function triggerGlobalWeb() {
     const msg = document.getElementById('web-msg').value;
+    const sender = localStorage.getItem('voxName');
     if(!msg) return;
     
-    // 1. Odeslání na Discord
-    postToDiscord(`📢 **GLOBAL BROADCAST:** ${msg}`);
+    const fullMsg = `${sender}: ${msg}`;
     
-    // 2. Lokální zobrazení
-    showGlobalAlert(msg);
+    // 1. Discord
+    postToDiscord(`📢 **GLOBAL BROADCAST** | ${fullMsg}`);
     
-    // Poznámka: Aby se to ukázalo v reálném čase ostatním, 
-    // v profesionální verzi by se zde použila služba "Ably" nebo "Pusher".
-    // Pro teď simulujeme live feed přes localStorage pro otevřená okna ve stejném prohlížeči:
-    localStorage.setItem('last_global_msg', msg + "||" + Date.now());
+    // 2. Local Sync (Other tabs)
+    localStorage.setItem('last_global_msg', fullMsg + "||" + Date.now());
+    
+    // 3. Show for me
+    showGlobalAlert(fullMsg);
+    document.getElementById('web-msg').value = "";
 }
 
 function showGlobalAlert(msg) {
     const box = document.getElementById('global-broadcast');
     document.getElementById('broadcast-msg').innerText = msg;
     box.style.top = "0";
-    setTimeout(() => { box.style.top = "-150px"; }, 5000);
+    setTimeout(() => { box.style.top = "-150px"; }, 6000);
 }
 
-// Kontrola "živých" zpráv z jiných oken
-setInterval(() => {
-    const raw = localStorage.getItem('last_global_msg');
-    if(raw) {
-        const [msg, time] = raw.split('||');
-        if(Date.now() - time < 2000) { // Pokud je zpráva čerstvá (poslaná teď)
-            showGlobalAlert(msg);
-            localStorage.removeItem('last_global_msg');
-        }
-    }
-}, 1000);
-
-// --- GAME LOGIC ---
-function gainXP(amt) {
-    userXP += amt;
-    if(userXP >= 100) { userXP = 0; userLvl++; postToDiscord(`🆙 **${localStorage.getItem('voxName')}** dosáhl Levelu ${userLvl}!`); }
-    updateUI();
-    save();
-}
-
-function updateUI() {
-    document.getElementById('xp-bar-fill').style.width = userXP + "%";
-    document.getElementById('p-rank').innerText = `RANK: SURVIVOR | LVL: ${userLvl}`;
-}
-
-function setLang(l) {
-    currentLang = l;
-    const t = translations[l];
-    document.getElementById('subtitle').innerText = t.sub;
-    document.getElementById('t-dl').innerText = t.dl;
-    document.getElementById('t-reg').innerText = t.reg;
-    document.getElementById('t-log').innerText = t.log;
-    document.getElementById('content').innerText = "Terminal Synced [" + l.toUpperCase() + "]";
-}
-
+// --- AUTH SYSTEM ---
 function login() {
-    const u = document.getElementById('username').value;
-    const p = document.getElementById('password').value;
-    if(u === "goodryk" && p === "Jjsjjseco") {
+    const u = document.getElementById('username').value.trim();
+    const p = document.getElementById('password').value.trim();
+    
+    if(ADMINS[u] && ADMINS[u] === p) {
         completeLogin(u, true);
     } else {
         completeLogin(u, false);
@@ -187,44 +218,80 @@ function completeLogin(name, isOwner) {
     localStorage.setItem('voxLogged', 'true');
     localStorage.setItem('voxName', name);
     localStorage.setItem('voxOwner', isOwner);
-    postToDiscord(`👤 **Login:** ${name} vstoupil do Voxelie.`);
+    postToDiscord(`👤 **Login:** ${name} has entered the Core.`);
     location.reload();
 }
 
 function showProfile() {
     document.getElementById('auth-box').style.display = 'none';
     document.getElementById('user-profile').style.display = 'block';
-    document.getElementById('p-name').innerText = localStorage.getItem('voxName').toUpperCase();
+    const name = localStorage.getItem('voxName');
+    document.getElementById('p-name').innerText = name.toUpperCase();
+    
     if(localStorage.getItem('voxOwner') === 'true') {
         document.getElementById('admin-tag').style.display = 'block';
         document.getElementById('admin-btn').style.display = 'inline-block';
+        document.getElementById('p-name').style.color = "var(--owner)";
     }
+    
     userXP = parseInt(localStorage.getItem('voxXP') || 0);
     userLvl = parseInt(localStorage.getItem('voxLvl') || 1);
     updateUI();
 }
 
-function logout() { localStorage.clear(); location.reload(); }
-function toggleAdmin() { const p = document.getElementById('admin-panel'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; }
+// --- UTILS ---
+function updateUI() {
+    document.getElementById('xp-bar-fill').style.width = userXP + "%";
+    document.getElementById('p-rank').innerText = `RANK: SURVIVOR | LVL: ${userLvl}`;
+}
+
 function save() { localStorage.setItem('voxXP', userXP); localStorage.setItem('voxLvl', userLvl); }
 
-// --- INIT ---
+function logout() { localStorage.clear(); location.reload(); }
+
+function toggleAdmin() { 
+    const p = document.getElementById('admin-panel'); 
+    p.style.display = p.style.display === 'block' ? 'none' : 'block'; 
+}
+
+function setLang(l) {
+    currentLang = l;
+    const t = translations[l] || translations['en'];
+    document.getElementById('subtitle').innerText = t.sub;
+    document.getElementById('t-dl').innerText = t.dl;
+    document.getElementById('t-reg').innerText = t.reg;
+    document.getElementById('t-log').innerText = t.log;
+    document.getElementById('content').innerText = "Terminal Synced.";
+}
+
+// Initialize Lang Buttons
 const langContainer = document.getElementById('lang-btns');
 Object.keys(translations).forEach(l => {
     const b = document.createElement('button'); b.className = 'lang-btn'; b.innerText = l.toUpperCase();
     b.onclick = () => setLang(l); langContainer.appendChild(b);
 });
 
+// Live Sync & Clock
+setInterval(() => {
+    document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+    
+    // Live Global Msg Check
+    const raw = localStorage.getItem('last_global_msg');
+    if(raw) {
+        const [msg, time] = raw.split('||');
+        if(Date.now() - time < 2000) {
+            showGlobalAlert(msg);
+            localStorage.removeItem('last_global_msg');
+        }
+    }
+}, 1000);
+
 window.onload = () => {
     if(localStorage.getItem('voxLogged') === 'true') showProfile();
     setLang('cz');
-    setInterval(() => { 
-        const n = new Date(); 
-        document.getElementById('clock').innerText = n.toLocaleTimeString(); 
-    }, 1000);
 };
 
-// Particles Background
+// Background Canvas
 const canvas = document.getElementById('bg-canvas'); const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth; canvas.height = window.innerHeight;
 const parts = [];
